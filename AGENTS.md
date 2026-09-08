@@ -2,6 +2,24 @@
 
 This repository implements Syed Aon Muhammad Kazmi's approved portfolio website design.
 
+## Mandatory planning bootstrap
+
+The approved spec and plans are stored as verified compressed text payloads because the repository was initialized through a text-only GitHub connector.
+
+Before any implementation work, check whether this file exists:
+
+`docs/superpowers/specs/2026-09-08-portfolio-website-design.md`
+
+If it does not exist, run:
+
+```bash
+python3 scripts/bootstrap-planning-docs.py
+```
+
+The command must finish with `Planning documents restored and checksums verified.` before you continue. If checksum verification fails, stop: do not reconstruct, paraphrase, or guess the missing planning document.
+
+After restoration, the generated Markdown files are authoritative project documentation and should be included with the implementation branch. Do not modify or delete `.planning-payload/` during Phase 1.
+
 ## Authority order
 
 When instructions conflict, use this precedence:
@@ -16,7 +34,7 @@ Do not silently change the approved product direction. If a plan detail conflict
 
 ## Current execution scope
 
-The repository starts as a documentation-only baseline. Begin with **Phase 1 only**:
+The repository starts as a documentation-first baseline. Begin with **Phase 1 only**:
 
 `docs/superpowers/plans/2026-09-08-portfolio-foundation-content-system.md`
 
@@ -28,6 +46,7 @@ Use the installed Superpowers skills whenever applicable.
 
 For Phase 1 execution:
 
+- Restore and verify the planning documents first if needed.
 - Read the active plan and its referenced spec before coding.
 - Use `superpowers:subagent-driven-development` when subagents are available.
 - Use `superpowers:using-git-worktrees` to ensure implementation occurs in an isolated worktree/feature branch, never directly on `main`.
@@ -112,7 +131,7 @@ Creating local commits in the isolated implementation branch/worktree is expecte
 
 ## Codex Cloud bootstrap note
 
-Phase 1 Task 1 begins from this documentation-only repository and requires downloading npm packages, shadcn resources, and Playwright Chromium. The Codex Cloud environment therefore needs agent internet access during the initial scaffold task. Once the app and lockfile exist, normal environment setup should prefer `npm ci`.
+Phase 1 Task 1 begins from this documentation-first repository and requires downloading npm packages, shadcn resources, and Playwright Chromium. The Codex Cloud environment therefore needs internet access during the initial scaffold task. Once the app and lockfile exist, normal environment setup should prefer `npm ci`.
 
 ## Primary documents
 
