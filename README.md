@@ -10,14 +10,26 @@ Production portfolio for **Syed Aon Muhammad Kazmi**, positioned at the intersec
 
 The product/design specification is approved. Implementation is intentionally phased; Codex should begin with **Phase 1 — Foundation & Content System** and stop at that phase boundary for review.
 
+## Codex Web handoff
+
+Read `AGENTS.md` and `CODEX_WEB_HANDOFF.md` before making changes.
+
+The approved spec and plans are stored as verified compressed text payloads under `.planning-payload/`. If the normal Markdown files under `docs/superpowers/` are not present yet, restore them with:
+
+```bash
+python3 scripts/bootstrap-planning-docs.py
+```
+
+Do not continue unless the script reports that all planning-document checksums verified.
+
 ## Execution order
+
+After the planning docs are restored:
 
 1. `docs/superpowers/specs/2026-09-08-portfolio-website-design.md`
 2. `docs/superpowers/plans/2026-09-08-portfolio-roadmap.md`
 3. `docs/superpowers/plans/2026-09-08-portfolio-foundation-content-system.md`
 4. Later phases only after explicit approval.
-
-Read `AGENTS.md` before making any changes.
 
 ## Approved stack
 
