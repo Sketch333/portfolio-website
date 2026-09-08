@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Tests / coverage
+coverage/
+playwright-report/
+test-results/
+
+# Environment / secrets
+.env*
+!.env.example
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Superpowers/Codex scratch work
+.superpowers/sdd/
+.worktrees/
