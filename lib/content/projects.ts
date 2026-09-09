@@ -53,7 +53,9 @@ function normalizeCalendarDates(
       const authoredDate = frontmatter.match(
         new RegExp(`^${field}:\\s*(\\d{4}-\\d{2}-\\d{2})\\s*(?:#.*)?$`, 'm'),
       )?.[1];
-      normalized[field] = authoredDate ?? value.toISOString().slice(0, 10);
+      if (authoredDate) {
+        normalized[field] = authoredDate;
+      }
     }
   }
 

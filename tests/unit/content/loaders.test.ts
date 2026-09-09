@@ -100,6 +100,14 @@ describe('filesystem content loaders', () => {
     ).rejects.toThrow();
   });
 
+  it('rejects timestamp metadata where a calendar date is required', async () => {
+    const { loadBlogPostsFrom } = await import('@/lib/content/blog');
+
+    await expect(
+      loadBlogPostsFrom(path.join(fixtureRoot, 'timestamp-content/blog')),
+    ).rejects.toThrow();
+  });
+
   it('rejects invalid experience metadata', async () => {
     const { loadExperienceFrom } = await import('@/lib/content/experience');
 
