@@ -1,0 +1,9 @@
+[
+  {
+    "company": "Example Co",
+    "role": "Example Role",
+    "periodLabel": "2026",
+    "current": false,
+    "highlights": ["Fixture highlight"]
+  }
+]
