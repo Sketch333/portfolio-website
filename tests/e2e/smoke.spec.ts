@@ -25,7 +25,15 @@ test("home page exposes the primary positioning", async ({ page }) => {
     "/resume",
   );
   await expect(page.getByRole("heading", { name: "Selected work" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse projects" })).toHaveAttribute(
+    "href",
+    "/projects",
+  );
   await expect(page.getByRole("heading", { name: "Experience" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "About this work" })).toHaveAttribute(
+    "href",
+    "/about",
+  );
   await expect(page.getByRole("heading", { name: "Ask My Portfolio" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Email me" })).toHaveAttribute(
     "href",

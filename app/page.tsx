@@ -45,7 +45,7 @@ export default function HomePage() {
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Browse projects that connect data, intelligent systems, and useful product experiences.
           </p>
-          <Link href="/#work" className={`${sectionLinkClassName} mt-5 inline-block`}>Browse projects</Link>
+          <Link href="/projects" className={`${sectionLinkClassName} mt-5 inline-block`}>Browse projects</Link>
         </div>
       </section>
 
@@ -55,7 +55,7 @@ export default function HomePage() {
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Explore the practice behind the work across AI, data, product, and business strategy.
           </p>
-          <Link href="/#experience" className={`${sectionLinkClassName} mt-5 inline-block`}>About this work</Link>
+          <Link href="/about" className={`${sectionLinkClassName} mt-5 inline-block`}>About this work</Link>
         </div>
       </section>
 
