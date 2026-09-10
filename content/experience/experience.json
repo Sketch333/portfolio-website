@@ -1,0 +1,23 @@
+[
+  {
+    "company": "SprintX",
+    "role": "Business Developer",
+    "periodLabel": "Present",
+    "current": true,
+    "highlights": []
+  },
+  {
+    "company": "WebForest",
+    "role": "Data Researcher",
+    "periodLabel": "Dates not supplied",
+    "current": false,
+    "highlights": []
+  },
+  {
+    "company": "Department of AI, UMT",
+    "role": "Teaching Assistant",
+    "periodLabel": "Dates not supplied",
+    "current": false,
+    "highlights": []
+  }
+]
