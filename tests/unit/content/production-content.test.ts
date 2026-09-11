@@ -13,6 +13,17 @@ describe('production portfolio content', () => {
     ]);
   });
 
+  it('keeps the two verified featured projects available for conventional browsing', async () => {
+    const projects = await getAllProjects();
+    const featured = projects.filter((project) => project.tier === 'featured');
+
+    expect(featured.map((project) => project.slug).sort()).toEqual([
+      'bi-superstore-dashboard',
+      'industrial-iot-sensor-analytics',
+    ]);
+    expect(featured).toHaveLength(2);
+  });
+
   it('keeps SprintX first without invented highlights', async () => {
     const experience = await getExperience();
 
