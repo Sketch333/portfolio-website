@@ -24,7 +24,7 @@ test("home page exposes the primary positioning", async ({ page }) => {
     "href",
     "/resume",
   );
-  await expect(page.getByRole("heading", { name: "Selected work" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Selected Work" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Browse projects" })).toHaveAttribute(
     "href",
     "/projects",
