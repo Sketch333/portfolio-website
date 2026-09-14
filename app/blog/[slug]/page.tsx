@@ -43,7 +43,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <p className="mt-5 text-lg leading-8 text-muted-foreground">{post.description}</p>
       <time className="mt-6 block text-sm text-muted-foreground" dateTime={post.publishedAt}>{post.publishedAt}</time>
       <ul className="mt-4 flex flex-wrap gap-2" aria-label="Article tags">
-        {post.tags.map((tag) => <li key={tag} className="rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">{tag}</li>)}
+        {post.tags.map((tag) => <li key={tag} className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">{tag}</li>)}
       </ul>
       <div className="mt-12">{body}</div>
     </article>
