@@ -25,3 +25,22 @@ it.each(['home', 'index'] as const)('renders a server-readable %s card with a de
   expect(container.textContent).toContain('Integration lead');
   expect([...container.querySelectorAll('li')].map((item) => item.textContent)).toEqual(['React', 'Django']);
 });
+
+it('presents the Superstore work through verified analytical lenses on the home page', () => {
+  const container = document.createElement('div');
+  container.innerHTML = renderToStaticMarkup(
+    <ProjectCard
+      project={{ ...project, slug: 'bi-superstore-dashboard', title: 'BI Superstore Dashboard' }}
+      variant="home"
+    />,
+  );
+
+  const preview = container.querySelector('[aria-label="Superstore dashboard analysis areas"]');
+  expect(preview).not.toBeNull();
+  expect(preview?.textContent).toContain('KPI analysis');
+  expect(preview?.textContent).toContain('Geographic analysis');
+  expect(preview?.textContent).toContain('Product analysis');
+  expect(preview?.textContent).toContain('Time analysis');
+  expect(container.querySelector('img')).toBeNull();
+  expect(container.querySelector('a[href="/projects/bi-superstore-dashboard"]')).not.toBeNull();
+});

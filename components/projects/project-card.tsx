@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { getProjectPresentation } from '@/lib/projects/presentation';
 import type { ProjectRecord } from '@/types/content';
 
@@ -13,11 +12,12 @@ type ProjectCardProps = {
 export function ProjectCard({ project, variant, ordinal, lead = false }: ProjectCardProps) {
   const presentation = getProjectPresentation(project);
   const isHome = variant === 'home';
+  const isBiHome = isHome && project.slug === 'bi-superstore-dashboard';
 
   return (
     <article
       className={isHome
-        ? `home-project ${lead ? 'home-project-lead' : ''} ${project.tier === 'featured' ? 'home-project-featured' : ''}`
+        ? `home-project ${lead ? 'home-project-lead' : ''} ${project.tier === 'featured' ? 'home-project-featured' : ''} ${isBiHome ? 'home-project-bi' : ''}`
         : 'h-full rounded-xl border bg-card p-6 text-card-foreground'}
     >
       {isHome && (
@@ -46,17 +46,25 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
         : 'mt-3 leading-7 text-muted-foreground'}>
         {project.description}
       </p>
-      {isHome && project.slug === 'bi-superstore-dashboard' && (
-        <figure className="mt-6">
-          <Image
-            src="/projects/superstore-dashboard.png"
-            alt="Global Superstore Power BI dashboard showing filters, KPI summaries, product bars, trends, and a world map"
-            width={1300}
-            height={722}
-            className="h-auto w-full rounded-lg border"
-          />
-          <figcaption className="home-caption mt-2">Static dashboard image from the Superstore project.</figcaption>
-        </figure>
+      {isBiHome && (
+        <div className="home-bi-preview mt-7" role="group" aria-label="Superstore dashboard analysis areas">
+          <div className="home-bi-preview-header">
+            <p className="home-kicker">Power BI / verified artifact</p>
+            <p className="home-caption">04 analytical views</p>
+          </div>
+          <p className="home-bi-preview-intro">One dashboard.<br />Four ways to read it.</p>
+          <ol className="home-bi-preview-grid">
+            {['KPI analysis', 'Geographic analysis', 'Product analysis', 'Time analysis'].map((area, index) => (
+              <li key={area}>
+                <span className="home-bi-preview-number">0{index + 1}</span>
+                <span>{area}</span>
+              </li>
+            ))}
+          </ol>
+          <Link href={`/projects/${project.slug}`} className="home-bi-preview-link">
+            View the verified dashboard <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
       )}
       {project.role && (
         <p className={isHome ? 'mt-5 text-sm leading-6' : 'mt-4 text-sm leading-6'}>
@@ -64,7 +72,7 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
           {project.role}
         </p>
       )}
-      {project.technologies.length > 0 && (
+      {project.technologies.length > 0 && !isBiHome && (
         <ul
           aria-label={`${project.title} technologies`}
           className={isHome
