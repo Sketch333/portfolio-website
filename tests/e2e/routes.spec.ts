@@ -43,6 +43,8 @@ test('project detail renders the verified personal role and remains readable wit
   await expect(page.getByRole('heading', { name: 'My Contribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Interactive Demonstration' })).toBeVisible();
   await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
+  await expect(page.getByText('CP-SAT scheduling progress')).toBeVisible();
+  await expect(page.getByText('Capacity and schedule state')).toBeVisible();
 
   await context.close();
 });
@@ -54,8 +56,11 @@ test('scheduler walkthrough exposes each state after the reader opts in', async 
   await expect(page.getByText('Constraints loaded')).toBeVisible();
   await page.getByRole('button', { name: 'Show scheduling conflicts' }).click();
   await expect(page.getByText('Conflicts identified')).toBeVisible();
+  await page.getByRole('button', { name: 'Inspect CP-SAT progress' }).click();
+  await expect(page.getByText('CP-SAT scheduling progress')).toBeVisible();
   await page.getByRole('button', { name: 'Resolve scheduling conflicts' }).click();
   await expect(page.getByText('Schedule resolved')).toBeVisible();
+  await expect(page.getByText('Capacity and schedule state')).toBeVisible();
   await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
 });
 
