@@ -50,6 +50,7 @@ test("home narrative and project navigation remain available without JavaScript"
   try {
     const page = await context.newPage();
     await page.goto("/");
+    await expect(page.getByRole("list", { name: "From data to impact" }).getByRole("listitem")).toHaveCount(4);
     await expect(page.locator("main h1, main h2")).toHaveText(headings);
     await page
       .getByRole("region", { name: "Selected Work" })
@@ -83,4 +84,38 @@ test("home sections fit representative viewports and pass Axe in both themes", a
     }
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   }
+});
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`hero progression is complete with ${reducedMotion} motion`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion });
+    await page.goto('/');
+    const story = page.getByRole('list', { name: 'From data to impact' });
+    await story.scrollIntoViewIfNeeded();
+    await expect(story.getByRole('listitem')).toHaveCount(4);
+    for (const label of ['Data', 'Intelligence', 'Product', 'Impact']) {
+      await expect(story.getByText(label, { exact: true })).toBeVisible();
+    }
+    const progress = page.locator('.hero-connection path').last();
+    if (reducedMotion === 'no-preference') {
+      await expect(progress).toHaveAttribute('stroke-dasharray', '1 1');
+    } else {
+      await expect(progress).not.toHaveAttribute('stroke-dasharray');
+    }
+    await page.locator('.hero-sequence').screenshot({ path: `.superpowers/sdd/2026-09-08-portfolio-home-project-experience/task-3-${reducedMotion}.png` });
+  });
+}
+
+test('mobile hero is a complete static progression without overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const story = page.getByRole('list', { name: 'From data to impact' });
+  await story.scrollIntoViewIfNeeded();
+  for (const label of ['Data', 'Intelligence', 'Product', 'Impact']) {
+    await expect(story.getByText(label, { exact: true })).toBeVisible();
+  }
+  await expect(page.locator('.hero-connection')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('.hero-sequence').screenshot({ path: '.superpowers/sdd/2026-09-08-portfolio-home-project-experience/task-3-mobile.png' });
 });

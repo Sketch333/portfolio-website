@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import { HeroSequence } from "@/components/interactive/hero-sequence";
 import { siteConfig } from "@/lib/metadata/site";
 
 export function HeroSection() {
@@ -31,27 +32,7 @@ export function HeroSection() {
             </Link>
           </div>
         </div>
-        <div className="mt-16 border-t pt-6 sm:mt-20">
-          <p className="home-caption mb-4">A connected approach</p>
-          <ol
-            aria-label="From data to impact"
-            className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4"
-          >
-            {["Data", "Intelligence", "Product", "Impact"].map(
-              (stage, index) => (
-                <li key={stage} className="flex items-center gap-3">
-                  <span className="home-caption">0{index + 1}</span>
-                  <span className="text-base font-medium">{stage}</span>
-                  {index < 3 && (
-                    <span aria-hidden="true" className="home-accent ml-auto">
-                      →
-                    </span>
-                  )}
-                </li>
-              ),
-            )}
-          </ol>
-        </div>
+        <HeroSequence />
       </div>
     </section>
   );
