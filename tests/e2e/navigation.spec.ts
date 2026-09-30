@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 test("desktop shell supports skip navigation, primary links, and theme switching", async ({
   page,
 }) => {
+  test.skip(test.info().project.name === "mobile-chromium", "Desktop navigation is hidden at the mobile viewport");
   await page.goto("/");
 
   const primary = page.getByRole("navigation", { name: "Primary" });

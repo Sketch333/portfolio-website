@@ -103,7 +103,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     } else {
       await expect(progress).not.toHaveAttribute('stroke-dasharray');
     }
-    await page.locator('.hero-sequence').screenshot({ path: `.superpowers/sdd/2026-09-08-portfolio-home-project-experience/task-3-${reducedMotion}.png` });
+    await page.locator('.hero-sequence').screenshot({ path: test.info().outputPath(`hero-${reducedMotion}.png`) });
   });
 }
 
@@ -117,5 +117,5 @@ test('mobile hero is a complete static progression without overflow', async ({ p
   }
   await expect(page.locator('.hero-connection')).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.locator('.hero-sequence').screenshot({ path: '.superpowers/sdd/2026-09-08-portfolio-home-project-experience/task-3-mobile.png' });
+  await page.locator('.hero-sequence').screenshot({ path: test.info().outputPath('hero-mobile.png') });
 });
