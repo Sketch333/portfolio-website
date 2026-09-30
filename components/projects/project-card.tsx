@@ -18,7 +18,7 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
     <article
       className={isHome
         ? `home-project ${lead ? 'home-project-lead' : ''} ${project.tier === 'featured' ? 'home-project-featured' : ''} ${isBiHome ? 'home-project-bi' : ''}`
-        : 'h-full rounded-xl border bg-card p-6 text-card-foreground'}
+        : 'project-index-card'}
     >
       {isHome && (
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -28,22 +28,23 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
           )}
         </div>
       )}
+      {!isHome && <p className="project-index-card-kicker">{presentation.accentLabel}</p>}
       <h3 className={isHome
         ? 'mt-8 text-2xl leading-tight font-medium tracking-tight sm:text-3xl'
-        : 'text-xl font-semibold tracking-tight'}>
+        : 'project-index-card-title'}>
         <Link
           href={`/projects/${project.slug}`}
           className={isHome
             ? 'home-project-title rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring'
-            : 'rounded-sm underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring'}
+            : 'rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring'}
         >
           {project.title}
-          {isHome && <span aria-hidden="true" className="home-accent ml-2">↗</span>}
+          <span aria-hidden="true" className={isHome ? 'home-accent ml-2' : 'project-index-card-arrow'}>↗</span>
         </Link>
       </h3>
       <p className={isHome
         ? 'home-secondary mt-5 max-w-2xl leading-7'
-        : 'mt-3 leading-7 text-muted-foreground'}>
+        : 'project-index-card-description'}>
         {project.description}
       </p>
       {isBiHome && (
@@ -68,7 +69,7 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
       )}
       {project.role && (
         <p className={isHome ? 'mt-5 text-sm leading-6' : 'mt-4 text-sm leading-6'}>
-          <span className={isHome ? 'home-secondary' : 'text-muted-foreground'}>My role / </span>
+          <span className={isHome ? 'home-secondary' : 'project-index-card-muted'}>My role / </span>
           {project.role}
         </p>
       )}
@@ -77,12 +78,12 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
           aria-label={`${project.title} technologies`}
           className={isHome
             ? 'mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs leading-5 font-mono'
-            : 'mt-5 flex flex-wrap gap-2'}
+            : 'project-index-card-stack'}
         >
           {project.technologies.slice(0, isHome ? 4 : undefined).map((technology) => (
             <li
               key={technology}
-              className={isHome ? undefined : 'rounded-full bg-muted px-3 py-1 text-sm text-foreground'}
+              className={isHome ? undefined : 'project-index-card-chip'}
             >
               {technology}
             </li>

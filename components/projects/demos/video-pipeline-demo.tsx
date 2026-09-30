@@ -8,16 +8,25 @@ const stages = [
 
 export function VideoPipelineDemo() {
   return (
-    <div className="mt-5 rounded-xl border border-border bg-card p-5 sm:p-6">
-      <p className="text-sm leading-6 text-muted-foreground">Conceptual walkthrough of the human-in-the-loop pipeline. No generated output is presented as a verified project artifact.</p>
-      <ol aria-label="Video pipeline stages" className="mt-5 grid gap-3">
-        {stages.map((stage, index) => (
-          <li key={stage.title} className="grid grid-cols-[2.5rem_1fr] gap-3 rounded-lg border border-border bg-background p-4">
-            <span aria-hidden="true" className="font-mono text-sm text-primary">{String(index + 1).padStart(2, '0')}</span>
-            <div><h3 className="font-semibold">{stage.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{stage.detail}</p></div>
-          </li>
-        ))}
-      </ol>
+    <div className="project-demo project-video-demo">
+      <div className="project-demo-topbar"><span>Pipeline / inspect the stages</span><span>Human checkpoint</span></div>
+      <div className="project-demo-content">
+        <p>Conceptual walkthrough of the human-in-the-loop pipeline. No generated output is presented as a verified project artifact. Select any stage to read its role.</p>
+        <ol aria-label="Video pipeline stages" className="video-stage-list">
+          {stages.map((stage, index) => (
+            <li key={stage.title}>
+              <details open={index === 0}>
+                <summary>
+                  <span className="video-stage-number">{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{stage.title}</h3>
+                  <span className="video-stage-marker" aria-hidden="true">+</span>
+                </summary>
+                <p>{stage.detail}</p>
+              </details>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   );
 }

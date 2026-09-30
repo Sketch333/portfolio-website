@@ -8,24 +8,25 @@ const stages = [
 
 export function IotSensorDemo() {
   return (
-    <div className="rounded-2xl border bg-card p-5 text-card-foreground sm:p-7">
-      <p className="text-sm text-muted-foreground">Documented workflow · explanatory walkthrough</p>
-      <ol aria-label="Sensor analytics stages" className="mt-6 grid gap-3">
+    <div className="project-demo">
+      <div className="project-demo-topbar"><span>Sensor analytics / inspect the workflow</span><span>Documented methods</span></div>
+      <div className="project-demo-content">
+      <p>Documented workflow · explanatory walkthrough. Select a stage to inspect its role.</p>
+      <ol aria-label="Sensor analytics stages" className="video-stage-list iot-stage-list">
         {stages.map((stage, index) => (
-          <li key={stage.title} className="rounded-xl border p-4">
-            <details open={index === 2 ? true : undefined}>
-              <summary className="cursor-pointer rounded-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
-                <span className="mr-3 font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>{stage.title}
-              </summary>
-              <p className="mt-3 leading-7 text-muted-foreground">{stage.detail}</p>
-              {'methods' in stage && <ul className="mt-3 flex flex-wrap gap-2" aria-label="Documented anomaly methods">
-                {stage.methods.map((method) => <li key={method} className="rounded-full border px-3 py-1 text-sm">{method}</li>)}
+          <li key={stage.title}>
+            <details open={index === 2}>
+              <summary><span className="video-stage-number">{String(index + 1).padStart(2, '0')}</span><h3>{stage.title}</h3><span className="video-stage-marker" aria-hidden="true">+</span></summary>
+              <p>{stage.detail}</p>
+              {'methods' in stage && <ul aria-label="Documented anomaly methods">
+                {stage.methods.map((method) => <li key={method}>{method}</li>)}
               </ul>}
             </details>
           </li>
         ))}
       </ol>
-      <p className="mt-5 text-sm text-muted-foreground">This describes the repository workflow; it is not a live sensor feed or a performance report.</p>
+      <p className="project-demo-disclaimer">This describes the repository workflow; it is not a live sensor feed or a performance report.</p>
+      </div>
     </div>
   );
 }

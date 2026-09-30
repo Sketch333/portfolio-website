@@ -18,31 +18,38 @@ export default async function ProjectsPage() {
   const projects = await getAllProjects();
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-6 py-16 sm:py-20">
-      <p className="text-sm font-medium tracking-[0.2em] text-muted-foreground">SELECTED WORK</p>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Projects</h1>
-      <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-        AI, data, and product work with the evidence and personal contribution boundaries available today.
-      </p>
+    <section className="project-story project-index">
+      <div className="project-story-wrap">
+        <header className="project-index-hero">
+          <p className="project-story-kicker">Selected work / Systems & applications</p>
+          <h1>Projects</h1>
+          <p>AI, data, and product work with the evidence and personal contribution boundaries available today.</p>
+        </header>
+        <div className="project-index-tiers">
+          {tiers.map(({ tier, title }) => {
+            const projectsInTier = projects.filter((project) => project.tier === tier).sort((a, b) => {
+              if (a.slug === 'university-timetable-system') return -1;
+              if (b.slug === 'university-timetable-system') return 1;
+              if (a.slug === 'industrial-iot-sensor-analytics') return -1;
+              if (b.slug === 'industrial-iot-sensor-analytics') return 1;
+              return 0;
+            });
+            if (projectsInTier.length === 0) return null;
 
-      <div className="mt-14 space-y-14">
-        {tiers.map(({ tier, title }) => {
-          const projectsInTier = projects.filter((project) => project.tier === tier);
-          if (projectsInTier.length === 0) return null;
-
-          return (
-            <section key={tier} aria-labelledby={`${tier}-projects`}>
-              <h2 id={`${tier}-projects`} className="text-2xl font-semibold tracking-tight">{title}</h2>
-              <ul className="mt-6 grid gap-5 md:grid-cols-2">
-                {projectsInTier.map((project) => (
-                  <li key={project.slug}>
-                    <ProjectCard project={project} variant="index" />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
+            return (
+              <section key={tier} aria-labelledby={`${tier}-projects`} className="project-index-tier">
+                <div className="project-index-tier-heading"><p className="project-story-kicker">{tier}</p><h2 id={`${tier}-projects`}>{title}</h2></div>
+                <ul className="project-index-grid">
+                  {projectsInTier.map((project) => (
+                    <li key={project.slug} className={project.slug === 'university-timetable-system' ? 'project-index-lead' : undefined}>
+                      <ProjectCard project={project} variant="index" />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

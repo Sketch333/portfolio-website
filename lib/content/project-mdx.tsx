@@ -42,6 +42,7 @@ const aliases: Record<string, SectionName> = {
 };
 
 const slotNames = {
+  section: 'PortfolioInternalProjectSection',
   contribution: 'PortfolioInternalProjectContributionSlot',
   technology: 'PortfolioInternalProjectTechnologySlot',
   demo: 'PortfolioInternalProjectDemoSlot',
@@ -49,10 +50,16 @@ const slotNames = {
 } as const;
 
 type Group = { name: SectionName | null; nodes: RootContent[]; trailing: Group[] };
+export type ProjectSectionLink = { id: string; label: string };
+
+function headingText(node: Heading) {
+  const read = (value: { value?: string; children?: unknown[] }): string =>
+    value.value ?? value.children?.map((child) => read(child as { value?: string; children?: unknown[] })).join('') ?? '';
+  return node.children.map((child) => read(child as { value?: string; children?: unknown[] })).join('').trim();
+}
 
 function headingName(node: Heading): SectionName | null {
-  if (!node.children.every((child) => child.type === 'text')) return null;
-  const heading = node.children.map((child) => child.value).join('').trim().toLowerCase();
+  const heading = headingText(node).toLowerCase();
   return aliases[heading] ?? null;
 }
 
@@ -73,7 +80,7 @@ function assertSlotsUnclaimed(node: unknown) {
   candidate.children?.forEach(assertSlotsUnclaimed);
 }
 
-function projectSectionPlugin(project: ProjectRecord, hasDemo: boolean, hasResources: boolean) {
+function projectSectionPlugin(project: ProjectRecord, hasDemo: boolean, hasResources: boolean, sectionLinks: ProjectSectionLink[]) {
   return () => (tree: Root) => {
     assertSlotsUnclaimed(tree);
 
@@ -119,12 +126,24 @@ function projectSectionPlugin(project: ProjectRecord, hasDemo: boolean, hasResou
 
     const rank = (group: Group) => group.name ? sectionNames.indexOf(group.name) : sectionNames.length;
     groups.sort((left, right) => rank(left) - rank(right));
+    const seen = new Map<string, number>();
+    const ordered = groups.flatMap((group) => [group, ...group.trailing]);
     tree.children = [
       ...preamble,
-      ...groups.flatMap((group) => [
-        ...group.nodes,
-        ...group.trailing.flatMap((trailing) => trailing.nodes),
-      ]),
+      ...ordered.map((group) => {
+        const title = headingText(group.nodes[0] as Heading);
+        const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
+        const count = (seen.get(base) ?? 0) + 1;
+        seen.set(base, count);
+        const id = `case-${base}${count > 1 ? `-${count}` : ''}`;
+        sectionLinks.push({ id, label: title });
+        return {
+          type: 'mdxJsxFlowElement',
+          name: slotNames.section,
+          attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
+          children: group.nodes,
+        } as RootContent;
+      }),
     ];
   };
 }
@@ -143,10 +162,12 @@ export async function renderProjectMdx(project: ProjectRecord, demo?: ReactNode)
   const hasDemo = demo !== undefined && demo !== null && demo !== false && demo !== '';
   const sourceUrl = publicUrl(project.sourceUrl);
   const demoUrl = publicUrl(project.demoUrl);
+  const sections: ProjectSectionLink[] = [];
   const { content } = await compileMDX({
     source: project.body,
     components: {
       ...mdxComponents,
+      [slotNames.section]: ({ id, children }: { id: string; children: ReactNode }) => <section className="project-section" id={id}>{children}</section>,
       [slotNames.contribution]: () => <p className="mt-4 font-medium leading-7">{project.role}</p>,
       [slotNames.technology]: () => (
         <ul className="mt-4 flex flex-wrap gap-2" aria-label="Technologies">
@@ -165,7 +186,7 @@ export async function renderProjectMdx(project: ProjectRecord, demo?: ReactNode)
         </ul>
       ),
     },
-    options: { mdxOptions: { remarkPlugins: [projectSectionPlugin(project, hasDemo, Boolean(sourceUrl || demoUrl))] } },
+    options: { mdxOptions: { remarkPlugins: [projectSectionPlugin(project, hasDemo, Boolean(sourceUrl || demoUrl), sections)] } },
   });
-  return content;
+  return { content, sections };
 }

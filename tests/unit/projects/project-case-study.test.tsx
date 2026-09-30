@@ -44,6 +44,23 @@ async function renderProject(project: ProjectRecord) {
 }
 
 describe('ProjectCaseStudy', () => {
+  it('uses an editorial case-study layout with individually navigable sections', async () => {
+    const container = await renderProject(fixture);
+    const sections = [...container.querySelectorAll('section.project-section')];
+
+    expect(container.querySelector('article.project-story')).not.toBeNull();
+    expect(container.querySelector('nav[aria-label="Case study sections"]')).not.toBeNull();
+    expect(sections.map((section) => section.querySelector('h2')?.textContent)).toEqual([
+      'Overview',
+      'My Contribution',
+      'Engineering Decisions',
+      'Technology',
+      'Evidence boundary',
+      'Source / Demo / Related Writing',
+    ]);
+    expect(sections.every((section) => Boolean(section.id))).toBe(true);
+  });
+
   it('orders authored sections and canonical slots while preserving unknown evidence and fenced text', async () => {
     const container = await renderProject(fixture);
     const headings = [...container.querySelectorAll('h2')].map((heading) => heading.textContent);

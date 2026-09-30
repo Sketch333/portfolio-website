@@ -8,23 +8,28 @@ const channels = [
 
 export function ChatbotSystemDemo() {
   return (
-    <div className="mt-5 rounded-xl border border-border bg-card p-5 sm:p-6">
-      <p className="text-sm leading-6 text-muted-foreground">Architecture walkthrough, not a live chatbot. The verified software record includes AIML assets, Prolog rules, Neo4j integration code, and a Python orchestrator.</p>
-      <div role="group" aria-label="Hybrid chatbot system map" className="mt-5">
-        <div className="rounded-lg border border-primary/40 bg-background p-4">
-          <h3 className="font-semibold">Python orchestrator</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Routes between the documented software components and the proposed input and memory channels.</p>
+    <div className="project-demo">
+      <div className="project-demo-topbar"><span>Hybrid reasoning / architecture map</span><span>Inspectable channels</span></div>
+      <div className="project-demo-content">
+        <p>Architecture walkthrough, not a live chatbot. The verified software record includes AIML assets, Prolog rules, Neo4j integration code, and a Python orchestrator.</p>
+        <div role="group" aria-label="Hybrid chatbot system map" className="chatbot-map">
+          <div className="chatbot-orchestrator">
+            <span className="project-story-kicker">Routing layer</span>
+            <h3>Python orchestrator</h3>
+            <p>Routes between the documented software components and the proposed input and memory channels.</p>
+          </div>
+          <ul className="chatbot-channels">
+            {channels.map((channel, index) => (
+              <li key={channel.title}>
+                <details open={index === 0}>
+                  <summary><span>{String(index + 1).padStart(2, '0')}</span><h4>{channel.title}</h4><span aria-hidden="true">+</span></summary>
+                  <p>{channel.detail}</p>
+                </details>
+              </li>
+            ))}
+          </ul>
+          <p className="chatbot-evidence"><strong>ESP32</strong> is named in the approved project scope as the hardware path for sensor input. Its hardware connection has not been independently verified, so this diagram does not imply a working connected device.</p>
         </div>
-        <p aria-hidden="true" className="py-2 text-center text-primary">↓</p>
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {channels.map((channel) => (
-            <li key={channel.title} className="rounded-lg border border-border bg-background p-4">
-              <h4 className="font-semibold">{channel.title}</h4>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">{channel.detail}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">ESP32</strong> is named in the approved project scope as the hardware path for sensor input. Its hardware connection has not been independently verified, so this diagram does not imply a working connected device.</p>
       </div>
     </div>
   );

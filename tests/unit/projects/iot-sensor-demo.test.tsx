@@ -5,7 +5,7 @@ import { IotSensorDemo } from '@/components/projects/demos/iot-sensor-demo';
 it('exposes every IoT stage and the documented anomaly methods without fabricated results', () => {
   render(<IotSensorDemo />);
   const stages = [...screen.getByRole('list', { name: 'Sensor analytics stages' }).querySelectorAll(':scope > li')];
-  expect(stages.map((stage) => stage.querySelector('summary')?.lastChild?.textContent)).toEqual([
+  expect(stages.map((stage) => within(stage as HTMLElement).getByRole('heading').textContent)).toEqual([
     'Raw stream', 'Cleaning and denoising', 'Anomaly detection', 'Health score', 'Forecast',
   ]);
   const anomaly = stages[2];

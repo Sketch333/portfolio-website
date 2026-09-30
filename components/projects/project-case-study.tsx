@@ -8,25 +8,42 @@ type ProjectCaseStudyProps = {
   project: ProjectRecord;
   presentation: ProjectPresentation;
   demo?: ReactNode;
+  nextProject?: Pick<ProjectRecord, 'slug' | 'title'>;
 };
 
-export async function ProjectCaseStudy({ project, presentation, demo }: ProjectCaseStudyProps) {
-  const body = await renderProjectMdx(project, demo);
+export async function ProjectCaseStudy({ project, presentation, demo, nextProject }: ProjectCaseStudyProps) {
+  const { content, sections } = await renderProjectMdx(project, demo);
 
   return (
-    <article className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
-      <Link
-        href="/projects"
-        className="rounded-sm text-sm font-medium underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-      >
-        All projects
-      </Link>
-      <p className="mt-8 text-sm font-medium tracking-[0.2em] text-muted-foreground">
-        {project.tier.toUpperCase()} / {presentation.accentLabel}
-      </p>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{project.title}</h1>
-      <p className="mt-5 text-lg leading-8 text-muted-foreground">{project.description}</p>
-      <div className="mt-12">{body}</div>
+    <article className="project-story">
+      <div className="project-story-wrap">
+        <header className="project-story-hero">
+          <Link href="/projects" className="project-story-back">← All projects</Link>
+          <p className="project-story-kicker">{project.tier} / {presentation.accentLabel}</p>
+          <h1>{project.title}</h1>
+          <p className="project-story-description">{project.description}</p>
+          {project.technologies.length > 0 && (
+            <ul className="project-story-stack" aria-label="Project technologies">
+              {project.technologies.map((technology) => <li key={technology}>{technology}</li>)}
+            </ul>
+          )}
+        </header>
+        <nav className="project-story-nav" aria-label="Case study sections">
+          {sections.map((section, index) => (
+            <a key={section.id} href={`#${section.id}`}>
+              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              {section.label}
+            </a>
+          ))}
+        </nav>
+        <div className="project-story-body">{content}</div>
+        {nextProject && (
+          <nav className="project-story-next" aria-label="Next project">
+            <p className="project-story-kicker">Next project</p>
+            <Link href={`/projects/${nextProject.slug}`}>{nextProject.title} <span aria-hidden="true">↗</span></Link>
+          </nav>
+        )}
+      </div>
     </article>
   );
 }

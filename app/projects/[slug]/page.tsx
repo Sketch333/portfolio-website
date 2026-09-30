@@ -8,6 +8,7 @@ import { SchedulerDemoFallback } from '@/components/projects/demos/scheduler-dem
 import { VideoPipelineDemo } from '@/components/projects/demos/video-pipeline-demo';
 import { ChatbotSystemDemo } from '@/components/projects/demos/chatbot-system-demo';
 import { IotSensorDemo } from '@/components/projects/demos/iot-sensor-demo';
+import { BiDashboardExplorer } from '@/components/projects/demos/bi-dashboard-explorer';
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -35,6 +36,21 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   if (!project) notFound();
 
   const presentation = getProjectPresentation(project);
+  const sequence = [
+    'university-timetable-system',
+    'ai-video-generation-pipeline',
+    'multimodal-ai-chatbot',
+    'industrial-iot-sensor-analytics',
+    'bi-superstore-dashboard',
+  ];
+  const projects = await getAllProjects();
+  const ordered = [...projects].sort((a, b) => {
+    const aRank = sequence.indexOf(a.slug);
+    const bRank = sequence.indexOf(b.slug);
+    return (aRank < 0 ? sequence.length : aRank) - (bRank < 0 ? sequence.length : bRank);
+  });
+  const position = ordered.findIndex((item) => item.slug === project.slug);
+  const nextProject = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : undefined;
   const demo = presentation.demo === 'scheduler'
     ? <SchedulerDemoLoader fallback={<SchedulerDemoFallback />} />
     : presentation.demo === 'video-pipeline'
@@ -43,6 +59,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         ? <ChatbotSystemDemo />
         : presentation.demo === 'iot'
           ? <IotSensorDemo />
-        : undefined;
-  return <ProjectCaseStudy project={project} presentation={presentation} demo={demo} />;
+          : presentation.demo === 'bi-dashboard'
+            ? <BiDashboardExplorer />
+            : undefined;
+  return <ProjectCaseStudy project={project} presentation={presentation} demo={demo} nextProject={nextProject} />;
 }

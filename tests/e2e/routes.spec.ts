@@ -22,6 +22,7 @@ test('projects index groups every published project and each detail route render
   await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Flagship projects' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Featured projects' })).toBeVisible();
+  await expect(page.locator('.project-index-grid').first().getByRole('heading').first()).toContainText('AI-Powered University Timetable Scheduling & Teacher Assignment System');
 
   for (const [slug, title] of projects) {
     await page.goto('/projects');
@@ -42,6 +43,7 @@ test('project detail renders the verified personal role and remains readable wit
   await expect(page.getByText('Full-Stack Integration Lead', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'My Contribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Interactive Demonstration' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Case study sections' }).getByRole('link', { name: /My Contribution/ })).toHaveAttribute('href', '#case-my-contribution');
   await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
   await expect(page.getByText('CP-SAT scheduling progress')).toBeVisible();
   await expect(page.getByText('Capacity and schedule state')).toBeVisible();
@@ -71,10 +73,14 @@ test('flagship AI walkthroughs retain their sequence and evidence limits without
   await page.goto('/projects/ai-video-generation-pipeline');
   await expect(page.getByRole('list', { name: 'Video pipeline stages' }).getByRole('listitem')).toHaveCount(5);
   await expect(page.getByText(/No generated output is presented as a verified project artifact/i)).toBeVisible();
+  await page.locator('summary').filter({ hasText: 'Scene plan' }).click();
+  await expect(page.getByText('Break the script into scenes with visual intent and a reviewable sequence.')).toBeVisible();
 
   await page.goto('/projects/multimodal-ai-chatbot');
   await expect(page.getByRole('group', { name: 'Hybrid chatbot system map' })).toBeVisible();
   await expect(page.getByText(/hardware connection has not been independently verified/i)).toBeVisible();
+  await page.locator('summary').filter({ hasText: 'Prolog' }).click();
+  await expect(page.getByText('Rule-based reasoning code in the verified repository.')).toBeVisible();
 
   await context.close();
 });
@@ -86,14 +92,21 @@ test('featured analytics remain readable without JavaScript', async ({ browser }
   await page.goto('/projects/industrial-iot-sensor-analytics');
   await expect(page.getByRole('list', { name: 'Sensor analytics stages' }).locator(':scope > li')).toHaveCount(5);
   await expect(page.getByText('Isolation Forest')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/Industrial_IoT_Sensor_Analytics');
+  await page.locator('summary').filter({ hasText: 'Raw stream' }).click();
+  await expect(page.getByText(/Multivariate readings from temperature/i)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Source', exact: true })).toHaveAttribute('href', 'https://github.com/Sketch333/Industrial_IoT_Sensor_Analytics');
 
   await page.goto('/projects/bi-superstore-dashboard');
   const dashboard = page.getByRole('img', { name: /Global Superstore Power BI dashboard/i });
   await expect(dashboard).toBeVisible();
   await expect(dashboard).toHaveAttribute('width', '1300');
   await expect(dashboard).toHaveAttribute('height', '722');
-  await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/BI-Superstore-Dashboard');
+  const analysisAreas = page.getByRole('list', { name: 'Dashboard analysis areas' });
+  await expect(analysisAreas.locator(':scope > li')).toHaveCount(4);
+  await analysisAreas.locator('summary').filter({ hasText: 'Geographic view' }).click();
+  await expect(page.getByText(/A world map shows the geographic perspective/i)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Inspect the original dashboard image/i })).toHaveAttribute('href', '/projects/superstore-dashboard.png');
+  await expect(page.getByRole('link', { name: 'Source', exact: true })).toHaveAttribute('href', 'https://github.com/Sketch333/BI-Superstore-Dashboard');
 
   await context.close();
 });
@@ -142,8 +155,10 @@ test('content routes have no horizontal overflow across representative viewports
     { width: 1440, height: 900 },
   ]) {
     await page.setViewportSize(viewport);
-    await page.goto('/projects/university-timetable-system');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    for (const [slug] of projects) {
+      await page.goto(`/projects/${slug}`);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    }
   }
 });
 
