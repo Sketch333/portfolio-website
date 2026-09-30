@@ -5,6 +5,8 @@ import { getAllProjects, getProjectBySlug } from '@/lib/content/projects';
 import { getProjectPresentation } from '@/lib/projects/presentation';
 import { SchedulerDemoLoader } from '@/components/projects/demos/scheduler-demo-loader';
 import { SchedulerDemoFallback } from '@/components/projects/demos/scheduler-demo-fallback';
+import { VideoPipelineDemo } from '@/components/projects/demos/video-pipeline-demo';
+import { ChatbotSystemDemo } from '@/components/projects/demos/chatbot-system-demo';
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -34,6 +36,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const presentation = getProjectPresentation(project);
   const demo = presentation.demo === 'scheduler'
     ? <SchedulerDemoLoader fallback={<SchedulerDemoFallback />} />
-    : undefined;
+    : presentation.demo === 'video-pipeline'
+      ? <VideoPipelineDemo />
+      : presentation.demo === 'chatbot-system'
+        ? <ChatbotSystemDemo />
+        : undefined;
   return <ProjectCaseStudy project={project} presentation={presentation} demo={demo} />;
 }

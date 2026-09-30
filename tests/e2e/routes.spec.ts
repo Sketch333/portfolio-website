@@ -64,6 +64,21 @@ test('scheduler walkthrough exposes each state after the reader opts in', async 
   await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
 });
 
+test('flagship AI walkthroughs retain their sequence and evidence limits without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  await page.goto('/projects/ai-video-generation-pipeline');
+  await expect(page.getByRole('list', { name: 'Video pipeline stages' }).getByRole('listitem')).toHaveCount(5);
+  await expect(page.getByText(/No generated output is presented as a verified project artifact/i)).toBeVisible();
+
+  await page.goto('/projects/multimodal-ai-chatbot');
+  await expect(page.getByRole('group', { name: 'Hybrid chatbot system map' })).toBeVisible();
+  await expect(page.getByText(/hardware connection has not been independently verified/i)).toBeVisible();
+
+  await context.close();
+});
+
 test('unknown project and blog slugs return a recoverable 404', async ({ page }) => {
   await page.goto('/projects/not-a-project');
   await expect(page.getByRole('heading', { name: /404|not found/i })).toBeVisible();
@@ -114,12 +129,13 @@ test('content routes have no horizontal overflow across representative viewports
 });
 
 test('relevant content routes have no Axe violations in light and dark themes', async ({ browser }) => {
+  test.setTimeout(90_000);
   for (const colorScheme of ['light', 'dark'] as const) {
     const context = await browser.newContext({ colorScheme });
     const page = await context.newPage();
     const errors = observePageErrors(page);
 
-    for (const path of ['/projects', '/projects/university-timetable-system', '/about', '/resume', '/blog']) {
+    for (const path of ['/projects', '/projects/university-timetable-system', '/projects/ai-video-generation-pipeline', '/projects/multimodal-ai-chatbot', '/about', '/resume', '/blog']) {
       await page.goto(path);
       const results = await new AxeBuilder({ page }).analyze();
       expect(results.violations).toEqual([]);
