@@ -18,11 +18,15 @@ export function ExperienceSection({
           <h2 id="experience-heading" className="home-title">
             Experience
           </h2>
+          <p className="home-secondary mt-6 max-w-sm leading-7">
+            A path through teaching and data research toward building systems
+            with a product and business perspective.
+          </p>
           <Link href="/about" className="home-link mt-6">
             About this work
           </Link>
         </div>
-        <ol className="border-t">
+        <ol aria-label="Experience timeline" className="border-t">
           {experience.map((item) => (
             <li key={`${item.company}-${item.role}`} className="border-b py-8">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
