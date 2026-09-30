@@ -7,6 +7,7 @@ import { SchedulerDemoLoader } from '@/components/projects/demos/scheduler-demo-
 import { SchedulerDemoFallback } from '@/components/projects/demos/scheduler-demo-fallback';
 import { VideoPipelineDemo } from '@/components/projects/demos/video-pipeline-demo';
 import { ChatbotSystemDemo } from '@/components/projects/demos/chatbot-system-demo';
+import { IotSensorDemo } from '@/components/projects/demos/iot-sensor-demo';
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -40,6 +41,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       ? <VideoPipelineDemo />
       : presentation.demo === 'chatbot-system'
         ? <ChatbotSystemDemo />
+        : presentation.demo === 'iot'
+          ? <IotSensorDemo />
         : undefined;
   return <ProjectCaseStudy project={project} presentation={presentation} demo={demo} />;
 }

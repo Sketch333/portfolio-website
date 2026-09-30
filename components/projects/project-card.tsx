@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getProjectPresentation } from '@/lib/projects/presentation';
 import type { ProjectRecord } from '@/types/content';
 
@@ -45,6 +46,18 @@ export function ProjectCard({ project, variant, ordinal, lead = false }: Project
         : 'mt-3 leading-7 text-muted-foreground'}>
         {project.description}
       </p>
+      {isHome && project.slug === 'bi-superstore-dashboard' && (
+        <figure className="mt-6">
+          <Image
+            src="/projects/superstore-dashboard.png"
+            alt="Global Superstore Power BI dashboard showing filters, KPI summaries, product bars, trends, and a world map"
+            width={1300}
+            height={722}
+            className="h-auto w-full rounded-lg border"
+          />
+          <figcaption className="home-caption mt-2">Static dashboard image from the Superstore project.</figcaption>
+        </figure>
+      )}
       {project.role && (
         <p className={isHome ? 'mt-5 text-sm leading-6' : 'mt-4 text-sm leading-6'}>
           <span className={isHome ? 'home-secondary' : 'text-muted-foreground'}>My role / </span>

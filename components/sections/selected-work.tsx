@@ -6,7 +6,14 @@ export function SelectedWork({ projects }: { projects: ProjectRecord[] }) {
   const ordered = [...projects].sort((a, b) => {
     if (a.slug === 'university-timetable-system') return -1;
     if (b.slug === 'university-timetable-system') return 1;
-    return Number(b.tier === 'flagship') - Number(a.tier === 'flagship');
+    const tierOrder = { flagship: 0, featured: 1, archive: 2 };
+    const tierDifference = tierOrder[a.tier] - tierOrder[b.tier];
+    if (tierDifference) return tierDifference;
+    if (a.tier === 'featured' && b.tier === 'featured') {
+      if (a.slug === 'industrial-iot-sensor-analytics') return -1;
+      if (b.slug === 'industrial-iot-sensor-analytics') return 1;
+    }
+    return 0;
   });
   return (
     <section id="work" aria-labelledby="work-heading" className="home-section">

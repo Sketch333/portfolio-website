@@ -79,6 +79,22 @@ test('flagship AI walkthroughs retain their sequence and evidence limits without
   await context.close();
 });
 
+test('featured analytics remain readable without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  await page.goto('/projects/industrial-iot-sensor-analytics');
+  await expect(page.getByRole('list', { name: 'Sensor analytics stages' }).locator(':scope > li')).toHaveCount(5);
+  await expect(page.getByText('Isolation Forest')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/Industrial_IoT_Sensor_Analytics');
+
+  await page.goto('/projects/bi-superstore-dashboard');
+  await expect(page.getByRole('img', { name: /Global Superstore Power BI dashboard/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/BI-Superstore-Dashboard');
+
+  await context.close();
+});
+
 test('unknown project and blog slugs return a recoverable 404', async ({ page }) => {
   await page.goto('/projects/not-a-project');
   await expect(page.getByRole('heading', { name: /404|not found/i })).toBeVisible();
@@ -135,7 +151,7 @@ test('relevant content routes have no Axe violations in light and dark themes', 
     const page = await context.newPage();
     const errors = observePageErrors(page);
 
-    for (const path of ['/projects', '/projects/university-timetable-system', '/projects/ai-video-generation-pipeline', '/projects/multimodal-ai-chatbot', '/about', '/resume', '/blog']) {
+    for (const path of ['/projects', '/projects/university-timetable-system', '/projects/ai-video-generation-pipeline', '/projects/multimodal-ai-chatbot', '/projects/industrial-iot-sensor-analytics', '/projects/bi-superstore-dashboard', '/about', '/resume', '/blog']) {
       await page.goto(path);
       const results = await new AxeBuilder({ page }).analyze();
       expect(results.violations).toEqual([]);
