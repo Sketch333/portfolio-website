@@ -140,6 +140,7 @@ function publicUrl(value: string | undefined) {
 }
 
 export async function renderProjectMdx(project: ProjectRecord, demo?: ReactNode) {
+  const hasDemo = demo !== undefined && demo !== null && demo !== false && demo !== '';
   const sourceUrl = publicUrl(project.sourceUrl);
   const demoUrl = publicUrl(project.demoUrl);
   const { content } = await compileMDX({
@@ -164,7 +165,7 @@ export async function renderProjectMdx(project: ProjectRecord, demo?: ReactNode)
         </ul>
       ),
     },
-    options: { mdxOptions: { remarkPlugins: [projectSectionPlugin(project, demo !== undefined && demo !== null, Boolean(sourceUrl || demoUrl))] } },
+    options: { mdxOptions: { remarkPlugins: [projectSectionPlugin(project, hasDemo, Boolean(sourceUrl || demoUrl))] } },
   });
   return content;
 }

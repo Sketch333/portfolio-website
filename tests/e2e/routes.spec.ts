@@ -41,8 +41,22 @@ test('project detail renders the verified personal role and remains readable wit
   await expect(page.getByRole('heading', { name: 'AI-Powered University Timetable Scheduling & Teacher Assignment System' })).toBeVisible();
   await expect(page.getByText('Full-Stack Integration Lead', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'My Contribution' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Interactive Demonstration' })).toBeVisible();
+  await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
 
   await context.close();
+});
+
+test('scheduler walkthrough exposes each state after the reader opts in', async ({ page }) => {
+  await page.goto('/projects/university-timetable-system');
+  await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
+  await page.getByRole('button', { name: 'Explore scheduling steps' }).click();
+  await expect(page.getByText('Constraints loaded')).toBeVisible();
+  await page.getByRole('button', { name: 'Show scheduling conflicts' }).click();
+  await expect(page.getByText('Conflicts identified')).toBeVisible();
+  await page.getByRole('button', { name: 'Resolve scheduling conflicts' }).click();
+  await expect(page.getByText('Schedule resolved')).toBeVisible();
+  await expect(page.getByRole('table', { name: 'Example resolved timetable' })).toBeVisible();
 });
 
 test('unknown project and blog slugs return a recoverable 404', async ({ page }) => {

@@ -108,4 +108,17 @@ describe('ProjectCaseStudy', () => {
     expect([...container.querySelectorAll('h2')].map((heading) => heading.textContent)).toEqual(['Overview']);
     expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
   });
+
+  it('does not create an empty demonstration section for false or empty demo props', async () => {
+    for (const demo of [false, '']) {
+      const element = await ProjectCaseStudy({
+        project: { ...fixture, body: '## Overview\nVerified prose.' },
+        presentation: getProjectPresentation(fixture),
+        demo,
+      });
+      const container = document.createElement('div');
+      container.innerHTML = renderToStaticMarkup(element);
+      expect(container.textContent).not.toContain('Interactive Demonstration');
+    }
+  });
 });
