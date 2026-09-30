@@ -121,4 +121,16 @@ describe('ProjectCaseStudy', () => {
       expect(container.textContent).not.toContain('Interactive Demonstration');
     }
   });
+
+  it('reserves space for the verified Superstore dashboard image', async () => {
+    const project = await getProjectBySlug('bi-superstore-dashboard');
+    expect(project).not.toBeNull();
+    const container = await renderProject(project!);
+    const image = container.querySelector<HTMLImageElement>('img[src="/projects/superstore-dashboard.png"]');
+
+    expect(image).not.toBeNull();
+    expect(image?.getAttribute('width')).toBe('1300');
+    expect(image?.getAttribute('height')).toBe('722');
+    expect(image?.getAttribute('alt')).toMatch(/Global Superstore Power BI dashboard/i);
+  });
 });

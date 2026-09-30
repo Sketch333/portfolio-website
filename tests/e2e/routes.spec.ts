@@ -89,7 +89,10 @@ test('featured analytics remain readable without JavaScript', async ({ browser }
   await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/Industrial_IoT_Sensor_Analytics');
 
   await page.goto('/projects/bi-superstore-dashboard');
-  await expect(page.getByRole('img', { name: /Global Superstore Power BI dashboard/i })).toBeVisible();
+  const dashboard = page.getByRole('img', { name: /Global Superstore Power BI dashboard/i });
+  await expect(dashboard).toBeVisible();
+  await expect(dashboard).toHaveAttribute('width', '1300');
+  await expect(dashboard).toHaveAttribute('height', '722');
   await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/Sketch333/BI-Superstore-Dashboard');
 
   await context.close();
