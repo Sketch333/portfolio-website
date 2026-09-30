@@ -40,7 +40,7 @@ test('project detail renders the verified personal role and remains readable wit
   await page.goto('/projects/university-timetable-system');
   await expect(page.getByRole('heading', { name: 'AI-Powered University Timetable Scheduling & Teacher Assignment System' })).toBeVisible();
   await expect(page.getByText('Full-Stack Integration Lead', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Contribution' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Contribution' })).toBeVisible();
 
   await context.close();
 });

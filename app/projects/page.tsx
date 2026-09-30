@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { ProjectCard } from '@/components/projects/project-card';
 import { getAllProjects } from '@/lib/content/projects';
 import type { ProjectTier } from '@/types/content';
 
@@ -32,30 +32,11 @@ export default async function ProjectsPage() {
 
           return (
             <section key={tier} aria-labelledby={`${tier}-projects`}>
-              <h2 id={`${tier}-projects`} className="text-2xl font-semibold tracking-tight">
-                {title}
-              </h2>
+              <h2 id={`${tier}-projects`} className="text-2xl font-semibold tracking-tight">{title}</h2>
               <ul className="mt-6 grid gap-5 md:grid-cols-2">
                 {projectsInTier.map((project) => (
                   <li key={project.slug}>
-                    <article className="h-full rounded-xl border bg-card p-6 text-card-foreground">
-                      <h3 className="text-xl font-semibold tracking-tight">
-                        <Link
-                          href={`/projects/${project.slug}`}
-                          className="rounded-sm underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-                        >
-                          {project.title}
-                        </Link>
-                      </h3>
-                      <p className="mt-3 leading-7 text-muted-foreground">{project.description}</p>
-                      <ul className="mt-5 flex flex-wrap gap-2" aria-label={`${project.title} technologies`}>
-                        {project.technologies.map((technology) => (
-                          <li key={technology} className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">
-                            {technology}
-                          </li>
-                        ))}
-                      </ul>
-                    </article>
+                    <ProjectCard project={project} variant="index" />
                   </li>
                 ))}
               </ul>
