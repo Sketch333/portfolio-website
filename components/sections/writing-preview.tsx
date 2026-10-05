@@ -13,9 +13,11 @@ export function WritingPreview({ posts }: { posts: BlogPostRecord[] }) {
           <div className="mt-10 border-t">
             {posts.map((post) => (
               <article key={post.slug} className="border-b py-7">
-                <time className="home-caption" dateTime={post.publishedAt}>
-                  {post.publishedAt}
-                </time>
+                {post.publishedAt && (
+                  <time className="home-caption" dateTime={post.publishedAt}>
+                    {post.publishedAt}
+                  </time>
+                )}
                 <h3 className="mt-3 text-2xl">
                   <Link className="home-link" href={`/blog/${post.slug}`}>
                     {post.title}

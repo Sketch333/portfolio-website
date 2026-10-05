@@ -33,9 +33,11 @@ export default async function BlogPage() {
                   </Link>
                 </h2>
                 <p className="mt-3 leading-7 text-muted-foreground">{post.description}</p>
-                <time className="mt-4 block text-sm text-muted-foreground" dateTime={post.publishedAt}>
-                  {post.publishedAt}
-                </time>
+                {post.publishedAt && (
+                  <time className="mt-4 block text-sm text-muted-foreground" dateTime={post.publishedAt}>
+                    {post.publishedAt}
+                  </time>
+                )}
               </article>
             </li>
           ))}

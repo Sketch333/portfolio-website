@@ -20,16 +20,68 @@ describe('content schemas', () => {
     expect(result.tier).toBe('flagship');
   });
 
-  it('rejects a post without a publication date', () => {
-    expect(() =>
-      blogFrontmatterSchema.parse({
-        title: 'Data Preprocessing',
-        description: 'Cleaning data for analysis.',
-        slug: 'data-preprocessing',
-        tags: ['Data Science'],
-        published: true,
-      }),
-    ).toThrow();
+  it('accepts a post without an unavailable publication date', () => {
+    expect(blogFrontmatterSchema.parse({
+      title: 'Data Preprocessing',
+      description: 'Cleaning data for analysis.',
+      slug: 'data-preprocessing',
+      tags: ['Data Science'],
+      category: 'technical',
+      excerpt: 'A short summary.',
+      published: true,
+    })).not.toHaveProperty('publishedAt');
+  });
+
+  it('accepts technical editorial metadata and rejects unsupported categories', () => {
+    const post = {
+      title: 'Data Preprocessing',
+      description: 'Cleaning data for analysis.',
+      slug: 'data-preprocessing',
+      publishedAt: '2026-01-02',
+      tags: ['Data Science'],
+      category: 'technical',
+      excerpt: 'A practical guide to preparing data.',
+    };
+
+    expect(blogFrontmatterSchema.parse(post)).toMatchObject({
+      category: 'technical',
+      excerpt: 'A practical guide to preparing data.',
+    });
+    expect(() => blogFrontmatterSchema.parse({ ...post, category: 'career' })).toThrow();
+  });
+
+  it('validates optional cover images and related project slugs', () => {
+    const post = {
+      title: 'Data Preprocessing',
+      description: 'Cleaning data for analysis.',
+      slug: 'data-preprocessing',
+      publishedAt: '2026-01-02',
+      tags: ['Data Science'],
+      category: 'build-journal',
+      excerpt: 'A practical guide to preparing data.',
+      coverImage: '/images/data-preprocessing.webp',
+      relatedProjectSlugs: ['timetable-system'],
+    };
+
+    expect(blogFrontmatterSchema.parse(post)).toMatchObject({
+      coverImage: '/images/data-preprocessing.webp',
+      relatedProjectSlugs: ['timetable-system'],
+    });
+    expect(() => blogFrontmatterSchema.parse({ ...post, coverImage: 'images/cover.webp' })).toThrow();
+    expect(() => blogFrontmatterSchema.parse({ ...post, coverImage: '//example.com/cover.webp' })).toThrow();
+    expect(() => blogFrontmatterSchema.parse({ ...post, relatedProjectSlugs: ['Bad Slug'] })).toThrow();
+  });
+
+  it('rejects timestamps when a calendar publication date is supplied', () => {
+    expect(() => blogFrontmatterSchema.parse({
+      title: 'Post',
+      description: 'Description',
+      slug: 'post',
+      publishedAt: '2026-01-02T12:00:00Z',
+      tags: ['Writing'],
+      category: 'technical',
+      excerpt: 'A short summary.',
+    })).toThrow();
   });
 
   it('allows an experience entry without unverified metrics', () => {
@@ -106,6 +158,8 @@ describe('content schemas', () => {
       slug: 'post',
       publishedAt: '2026-01-02',
       tags: ['Writing'],
+      category: 'technical',
+      excerpt: 'A short summary.',
     });
     const experience = experienceRecordSchema.parse({
       company: 'SprintX',

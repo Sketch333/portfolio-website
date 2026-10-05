@@ -10,7 +10,7 @@ export async function getAllPosts(): Promise<BlogPostRecord[]> {
 
   return posts
     .filter((post) => post.published)
-    .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
+    .sort((left, right) => (right.publishedAt ?? '').localeCompare(left.publishedAt ?? ''));
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPostRecord | null> {

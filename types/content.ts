@@ -18,9 +18,13 @@ export type BlogPostRecord = {
   title: string;
   description: string;
   slug: string;
-  publishedAt: string;
+  publishedAt?: string;
   updatedAt?: string;
   tags: string[];
+  category: 'technical' | 'build-journal';
+  excerpt: string;
+  coverImage?: string;
+  relatedProjectSlugs?: string[];
   published: boolean;
   featured?: boolean;
   body: string;

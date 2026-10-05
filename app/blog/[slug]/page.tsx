@@ -41,7 +41,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </Link>
       <h1 className="mt-8 text-4xl font-semibold tracking-tight sm:text-5xl">{post.title}</h1>
       <p className="mt-5 text-lg leading-8 text-muted-foreground">{post.description}</p>
-      <time className="mt-6 block text-sm text-muted-foreground" dateTime={post.publishedAt}>{post.publishedAt}</time>
+      {post.publishedAt && (
+        <time className="mt-6 block text-sm text-muted-foreground" dateTime={post.publishedAt}>
+          {post.publishedAt}
+        </time>
+      )}
       <ul className="mt-4 flex flex-wrap gap-2" aria-label="Article tags">
         {post.tags.map((tag) => <li key={tag} className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">{tag}</li>)}
       </ul>
