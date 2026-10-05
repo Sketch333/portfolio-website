@@ -1,0 +1,62 @@
+---
+title: "The Ethics of Data Science: Responsibilities of a Data Scientist"
+slug: the-ethics-of-data-science-responsibilities-of-a-data-scientist
+description: "Check privacy, bias, transparency, and accountability before deploying a model, and define who can review, challenge, or stop its decisions."
+excerpt: "An accurate model can still create unfair outcomes. Use a hiring-screening scenario to ask better questions about data, decisions, and responsibility."
+tags: [Data Science, Responsible AI, Ethics]
+category: technical
+featured: true
+published: true
+---
+
+A hiring team asks for a model that ranks applicants using past hiring decisions. The historical labels look convenient: hired or not hired. But what exactly would the model learn to reproduce?
+
+It might learn patterns in the old selection process rather than evidence of who can do the job. That possibility changes the project before an algorithm is chosen.
+
+**Ethical data science means examining how data is collected, what a model is asked to do, who may be harmed, and who remains responsible.** Accuracy is one part of that assessment.
+
+## Can an accurate model still cause harm?
+
+Yes. Accuracy against historical labels says how well predictions match those labels. It does not establish that the labels represent a fair or appropriate decision.
+
+In this hypothetical hiring scenario, begin by questioning the target. Are past decisions a defensible proxy for job-relevant performance? Who is missing from the records? Would the output exclude applicants automatically, or support a documented review?
+
+The [NIST AI Risk Management Framework FAQ](https://www.nist.gov/itl/ai-risk-management-framework/ai-risk-management-framework-faqs) treats validity, safety, transparency, privacy, and fairness as distinct aspects of trustworthy AI. A strong result on one dimension cannot settle the others.
+
+## What should you check before collecting data?
+
+Write down the purpose of each field. If the team cannot explain why a field is needed, question whether it belongs in the dataset. Decide who can access the records, how long they are retained, and how copies used for experiments will be handled.
+
+Make the intended use understandable to the people providing data. Involve the organization's privacy and legal specialists in determining the applicable obligations and permissions; an engineering checklist cannot establish compliance across jurisdictions.
+
+For the hiring example, avoid quietly reusing applicant information for a different project. Also ask what could be inferred from combinations of fields. Removing a name should not be treated as proof that the remaining records are safe to share.
+
+## How should you look for bias?
+
+Inspect the data collection process and the consequences of errors, then choose assessments that fit the use case. In the example, a false rejection and a false recommendation affect different people in different ways.
+
+Ask the team to examine:
+
+- **Representation:** which relevant populations and circumstances are absent or sparsely recorded?
+- **Labels:** who produced the historical decisions, and under what conditions?
+- **Performance:** where do errors concentrate, and how uncertain are subgroup estimates?
+- **Use:** could reviewers over-trust a ranking or apply it outside its intended scope?
+- **Remedy:** how can someone report a problem and obtain a meaningful review?
+
+These questions guide investigation; they do not supply a universal fairness score. Involve people who understand the decision and those affected by it. The [NIST AI RMF Playbook](https://www.nist.gov/itl/ai-risk-management-framework/nist-ai-rmf-playbook) organizes risk work around governance, context, measurement, and management rather than a single model check.
+
+## What should a data scientist document?
+
+Keep the data sources, target definition, exclusions, cleaning decisions, evaluation results, and known limitations together. Record the intended users and uses, including uses that have not been evaluated.
+
+Give the hiring reviewer an explanation suited to their decision. A technical account of model architecture is different from explaining what a score represents and when it should be questioned. Transparency should help people act responsibly, not overwhelm them with implementation detail.
+
+Document unresolved concerns as well as successful tests. If evidence is insufficient for the proposed use, make that visible before launch.
+
+## Who is accountable after deployment?
+
+Responsibility belongs to an organization with named decision owners, not just the person who trained the model. Data scientists should surface limitations and test behavior. Product and operational owners must define how outputs are used. Leadership must resource review, monitoring, and remediation.
+
+Before a release, agree on who can pause the system, what triggers investigation, and how affected people can seek help. Revisit those decisions when the data, users, or purpose changes.
+
+For a project brief that connects analysis to its real-world use, read [how data science solves business problems](/blog/from-data-to-insights-how-data-science-solves-business-problems). The ethical questions belong at that first decision, and continue through the life of the system.

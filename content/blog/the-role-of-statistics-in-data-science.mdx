@@ -1,0 +1,54 @@
+---
+title: "The Role of Statistics in Data Science"
+slug: the-role-of-statistics-in-data-science
+description: "Use distributions, confidence intervals, hypothesis tests, and regression to reason about uncertainty and avoid confusing correlation with causation."
+excerpt: "A higher conversion rate raises a question, not an automatic verdict. Statistics helps separate the observed difference from what the evidence supports."
+tags: [Statistics, Data Science, Experimentation]
+category: technical
+featured: true
+published: true
+---
+
+A product team changes a signup page and sees a higher conversion rate. Should it keep the new version? The answer depends on more than which percentage is larger. Who saw each version? How many visitors were included? Could the difference reflect ordinary variation?
+
+**Statistics gives data science tools for describing observations, evaluating uncertainty, and testing explanations.** It helps you decide what the data supports and what remains unresolved.
+
+## Why are averages not enough?
+
+Start with descriptive statistics: counts, proportions, mean, median, and measures of spread. Each summarizes a different part of the data.
+
+For the signup example, report conversions alongside eligible visitors. For website traffic, inspect the distribution of daily visits rather than reporting only an average. A few unusually busy days can change the mean without describing a typical day well.
+
+Likewise, two groups can have similar averages and very different variation. A histogram or box plot helps reveal that difference. Before making comparisons, check whether measurement definitions, time windows, and missing records are consistent.
+
+Descriptive analysis is also a debugging step. An impossible value or a sudden break in a distribution may reveal an instrumentation change. The [visualization guide](/blog/how-data-visualization-enhances-decision-making) shows how to pair these checks with suitable charts.
+
+## What does a confidence interval actually mean?
+
+A confidence interval expresses uncertainty using a statistical procedure with specified assumptions. In the frequentist interpretation, a 95% procedure would cover the fixed population parameter in 95% of repeated samples under those assumptions. It does not assign a 95% probability to that fixed parameter being inside the particular interval already calculated. [NIST explains this interpretation for confidence limits](https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm).
+
+For a signup experiment, use a method appropriate for a difference in conversion proportions. Do not borrow an interval formula for a different kind of measurement just because it is convenient.
+
+Ask whether the range includes differences too small to justify changing the product. Statistical uncertainty and practical importance are separate questions. An interval also cannot repair unrepresentative sampling or a broken measurement process.
+
+## What does a p-value tell you?
+
+A p-value measures how extreme the observed test statistic, or a more extreme one, would be under the null hypothesis and the test's assumptions. It is not the probability that the null hypothesis is true. [NIST's testing guide](https://www.itl.nist.gov/div898/handbook/prc/section1/prc131.htm) provides the definition and recommends setting the decision criterion in advance.
+
+For the signup example, decide the comparison, primary outcome, and analysis approach before reviewing results. Report the estimated effect and uncertainty alongside any significance test. “Statistically significant” alone does not answer whether the change is worth implementing.
+
+## Does correlation mean causation?
+
+No. If advertising spend and sales rise together, the relationship may reflect a campaign effect, seasonal demand, or another influence. A scatter plot can reveal association; it cannot establish the cause. [NIST's scatter-plot guidance](https://www.itl.nist.gov/div898/handbook/eda/section3/scatterp.htm) makes this distinction explicit.
+
+In the signup scenario, comparing last month's old page with this month's new page leaves room for changes in visitor mix or seasonality. A properly designed randomized experiment can strengthen a causal comparison, but still needs reliable measurement and careful analysis. [NIST's introduction to randomized designs](https://www.itl.nist.gov/div898/handbook/pri/section3/pri331.htm) describes how assignment supports a planned comparison.
+
+When presenting an observational result, separate the finding from the explanation: “These measures moved together” is a different claim from “Changing this measure caused the outcome.”
+
+## How do statistics and machine learning fit together?
+
+Regression models relationships; probability provides a language for uncertainty; evaluation checks whether learned patterns generalize. These tools overlap with machine learning, while data science also includes data engineering, software, and the domain knowledge needed to frame a useful question.
+
+Bayesian methods offer another way to express uncertainty by updating prior beliefs with evidence through a model. The assumptions and prior choices still need scrutiny, as [NIST's Bayesian overview](https://www.itl.nist.gov/div898/handbook/apr/section1/apr1a.htm) illustrates. No statistical method makes weak data automatically trustworthy.
+
+To practice, take one decision and produce a compact analysis: define the population, describe the sample, plot the distribution, estimate the relevant difference, and list plausible limitations. Then explain what additional evidence would change your recommendation. That is a more useful starting point than memorizing a long list of tests.

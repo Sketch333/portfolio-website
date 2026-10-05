@@ -1,0 +1,56 @@
+---
+title: "How Data Visualization Enhances Decision Making"
+slug: how-data-visualization-enhances-decision-making
+description: "Choose charts for comparisons, trends, distributions, and relationships, then add the context and accessibility a sound decision needs."
+excerpt: "The right chart answers a specific question. Use a sales review to see when a bar chart, line chart, distribution, or plain table is most useful."
+tags: [Data Visualization, Business Analytics, Accessibility]
+category: technical
+featured: true
+published: true
+---
+
+“Sales are down” is an observation. It does not yet tell a team where to look or what to do. Are all regions declining? Did one unusually strong month distort the comparison? Is revenue falling while order volume stays steady?
+
+**Data visualization improves a decision when it makes the relevant comparison easier to see.** Start with the reader's question, then choose the chart. The tool comes later.
+
+## Which chart should you use?
+
+For a sales review, try these question-and-chart pairs. They are starting points, not rules that override the shape of your data.
+
+- **Which region sold the most?** A sorted bar chart makes category values easy to compare. Show the unit and reporting period; use a zero baseline when bar length represents magnitude.
+- **When did sales change?** A line chart shows the sequence across time. Keep time intervals consistent and make missing periods visible.
+- **What does a typical order look like?** A histogram shows the distribution of order values. A box plot can summarize the spread, but explain its marks if the audience is unfamiliar with it.
+- **Do discount and order value move together?** A scatter plot shows paired observations. Inspect unusual points and clusters before drawing a conclusion.
+- **What share comes from each channel?** A bar chart or a simple part-to-whole chart can help. Make the denominator explicit and avoid crowding many tiny categories into a pie.
+
+The [NIST scatter-plot guide](https://www.itl.nist.gov/div898/handbook/eda/section3/scatterp.htm) describes how to inspect relationships and cautions that association does not establish cause.
+
+## How does a chart change the next decision?
+
+Imagine the regional bar chart shows that one region accounts for much of the decline. The next chart should answer the next question: did that region decline steadily, or did something change at a specific point?
+
+Add a time series and annotate known events, such as a reporting change or a promotion. These annotations provide context; they do not prove an explanation. The team might now investigate stock availability or compare channels within that region.
+
+This is more useful than putting every available metric on one dashboard. Each view earns its place by narrowing the next decision or exposing a reason to be cautious.
+
+## What context prevents a misleading interpretation?
+
+Name the metric precisely. “Sales” could mean gross revenue, revenue after returns, or units sold. Include currency, time period, source, and filters. Make clear whether the latest period is complete.
+
+Compare like with like. A partial month against a full month creates an obvious trap. A percentage change from a very small starting value can also look dramatic, so show the underlying values when they affect interpretation.
+
+Inspect the data behind surprising marks. A spike caused by duplicated transactions is a cleaning problem. Follow the [preprocessing guide](/blog/data-preprocessing-a-guide-to-cleaning-your-data) before presenting it as a business event.
+
+## How do you make charts accessible?
+
+Explain the main takeaway in nearby text. Label important series directly where practical, and use patterns or line styles alongside color so that color is not the only way to distinguish them.
+
+For a chart published as an image, provide a concise text alternative and an accompanying description or data table with the detail readers need. [W3C's guidance for complex images](https://www.w3.org/WAI/tutorials/images/complex/) gives examples of these layered descriptions.
+
+For an interactive dashboard, check that filters can be operated with a keyboard and that critical values are not available only on hover. Interactivity should help exploration without becoming a requirement for understanding the main point.
+
+## When is a table better than a chart?
+
+Use a table when the reader needs exact values, such as the order quantity for a particular product. Use a chart when the reader needs a pattern or comparison. A report can offer both: a trend for orientation and a small table for action.
+
+Before sharing, ask someone to explain the visual back to you. If they cannot identify the question, unit, comparison, and next step, revise those elements before adding more decoration. A clear view in a familiar spreadsheet is often a better starting point than a dashboard whose purpose nobody can explain.

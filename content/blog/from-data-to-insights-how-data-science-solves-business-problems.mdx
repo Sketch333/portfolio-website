@@ -1,0 +1,64 @@
+---
+title: "From Data to Insights: How Data Science Solves Business Problems"
+slug: from-data-to-insights-how-data-science-solves-business-problems
+description: "Turn a business question into a useful data science project: define the decision, establish a baseline, evaluate errors, and measure the resulting action."
+excerpt: "A demand forecast matters when someone can use it to place a better order. Follow the path from a business question to a measurable decision."
+tags: [Data Science, Business Analytics, Product Thinking]
+category: technical
+featured: true
+published: true
+---
+
+A retailer has plenty of sales data and still runs out of popular products. The immediate question is not which algorithm to train. It is what the purchasing team needs to decide before the next delivery.
+
+**Data science helps a business by connecting evidence to a decision:** understand what happened, estimate what may happen next, choose an action, and check whether that action helped. A model is useful only within that chain.
+
+## Where should a business data science project start?
+
+Start with a decision that has an owner, a deadline, and a consequence. In this illustrative retail scenario, “understand sales” is too broad. “Help the buyer decide next week's order quantities for a product category” is actionable.
+
+Write a short decision brief:
+
+- **Action:** change the next purchase order.
+- **Owner:** the person responsible for replenishment.
+- **Available evidence:** past sales, stock availability, promotions, and supplier lead times.
+- **Cost of being wrong:** missed sales from under-ordering or unsold inventory from over-ordering.
+- **Success measure:** a pre-agreed balance of availability, waste, and operational effort.
+
+This also makes room for a useful early discovery: the problem may be inconsistent stock records or a purchasing delay. Fixing that can be more valuable than introducing a model.
+
+## What data do you need to answer the question?
+
+Work backward from what the buyer knows when placing an order. Do not include information that arrives afterward. Check timestamps, product identifiers, returns, and stockouts before treating recorded sales as a complete picture of demand.
+
+For example, zero sales while an item is unavailable does not tell you how many people wanted it. That is a limitation to investigate with the business team, not a blank cell to fill automatically.
+
+Document each field's source and meaning. Use the [data preprocessing workflow](/blog/data-preprocessing-a-guide-to-cleaning-your-data) to make cleaning choices repeatable. Keep access proportionate to the question; a product-level inventory analysis may not need individual customer identities.
+
+## How do you know whether a model is useful?
+
+Compare it with the current decision process and a simple baseline. For the retailer, a candidate baseline might use the previous comparable period. Agree on that comparison before seeing the new model's results.
+
+Evaluate a forecast using earlier data to predict later observations. Scikit-learn's [time-series cross-validation guidance](https://scikit-learn.org/stable/modules/cross_validation.html#time-series-split) explains why ordinary shuffled evaluation can be misleading for time-dependent data.
+
+Then inspect errors where they matter: fast-selling items, promotional periods, and expensive overstock. An overall average can hide a failure in the category the buyer cares about most. Discuss what size of error changes the order decision, and how much review the team can realistically do.
+
+## How does an insight become an action?
+
+Put the recommendation where the work happens. A useful output might show suggested quantities, recent demand, known stock gaps, and a reason to review an unusual recommendation. Assign someone to resolve missing inputs and record overrides.
+
+Treat adoption as a testable part of the project. In a limited pilot, track what the team actually used, what it rejected, and what happened afterward. Choose an evaluation design with the analyst and business owner; a before-and-after improvement alone does not establish that the model caused it.
+
+The [statistics guide](/blog/the-role-of-statistics-in-data-science) explains why uncertainty and alternative explanations belong in that discussion.
+
+## Where else does this approach apply?
+
+The same decision-first pattern translates to the source article's other business problems:
+
+- **Customer experience:** decide which recommendation to show, then evaluate whether it helps the customer.
+- **Marketing:** decide which campaign to test, including a comparison and a spending constraint.
+- **Fraud review:** decide which transactions deserve investigation within available review capacity.
+- **Predictive maintenance:** decide which equipment to inspect and how much warning technicians need.
+- **Employee retention:** investigate workplace conditions with privacy and fairness safeguards, rather than treating a score as an employment decision.
+
+These are possible applications, not promises of improved revenue or reduced risk. Before building, complete this sentence: “When this analysis arrives, this person will use it to make this decision.” If that sentence is unclear, refine the question first.

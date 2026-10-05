@@ -1,0 +1,50 @@
+---
+title: "Supervised vs. Unsupervised Learning: Key Differences"
+slug: supervised-vs-unsupervised-learning-key-differences
+description: "Understand supervised and unsupervised learning through labels, prediction goals, clustering, and the different ways to evaluate each approach."
+excerpt: "Predicting which customers will leave and discovering groups of similar customers are different tasks, even when they begin with the same dataset."
+tags: [Machine Learning, Supervised Learning, Unsupervised Learning]
+category: technical
+featured: true
+published: true
+---
+
+You have a table of customer purchases. Should you train a supervised model or run an unsupervised algorithm? The table alone cannot answer that. You need to know what you want to learn and whether you have examples of the answer.
+
+**Supervised learning learns from inputs paired with a target. Unsupervised learning looks for structure without that target.** Predicting whether a customer will leave and grouping customers by purchasing behavior are different jobs. [Google's introduction to machine learning](https://developers.google.com/machine-learning/intro-to-ml/what-is-ml) explains this distinction.
+
+## What counts as a label in supervised learning?
+
+A label is the outcome the model is trained to predict. It need not be a category: a sale price can be a numerical target, while spam versus non-spam is a classification label.
+
+For a customer-churn project, define the target precisely. Does “left” mean canceled a subscription, stopped buying for a specified period, or failed to renew? Choose an observation window for the inputs and a later window for the outcome.
+
+That definition determines what counts as a training example. A cancellation date recorded after the prediction point cannot quietly become an input. The model must work with information available when the decision is made.
+
+Common supervised approaches include regression, decision trees, support vector machines, and neural networks. The choice of algorithm comes after the target and evaluation are clear.
+
+## What does unsupervised learning produce?
+
+It can produce groups, lower-dimensional representations, or signals of unusual observations. In customer segmentation, clustering might group customers using purchase frequency and spending patterns. Those groups do not arrive with authoritative business names.
+
+Inspect their characteristics before calling them “loyal,” “high value,” or “at risk.” Such names are interpretations. The selected features and similarity measure help determine the groups, so ask whether they express the distinction the business actually needs.
+
+K-means and hierarchical clustering are examples of clustering methods. Principal component analysis serves a different purpose: dimensionality reduction. It can support exploration without assigning customers to business categories. Scikit-learn's [unsupervised-learning guide](https://scikit-learn.org/stable/unsupervised_learning.html) separates these families.
+
+## How do you evaluate the two approaches?
+
+For supervised learning, compare predictions with held-out outcomes using a metric suited to the task. For churn, ask about missed departures and false alarms, not just overall accuracy. Also compare with a simple baseline.
+
+For clustering, there may be no agreed correct group for each customer. Internal measures such as silhouette score assess aspects of separation, but do not establish business usefulness. Scikit-learn's [clustering evaluation guide](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) explains the available measures and their limitations.
+
+Add practical checks: do the groups remain understandable across reasonable feature choices? Can a team act on the differences? Are tiny groups exposing data errors? Do the patterns persist in a later sample? Treat those as investigation questions rather than reasons to accept whichever chart looks most separated.
+
+## Which approach should you choose without labels?
+
+If the question is exploratory, start with descriptive analysis and consider unsupervised learning when it adds something useful. If the goal is a specific prediction, missing labels are a data problem to solve; clustering does not automatically substitute for known outcomes.
+
+You might collect labels through reviewed examples or a carefully defined outcome process. With both labeled and unlabeled examples, semi-supervised methods may help, but their assumptions must suit the dataset. [Scikit-learn's semi-supervised guide](https://scikit-learn.org/stable/modules/semi_supervised.html) describes that setting.
+
+Fraud detection illustrates the boundary: known confirmed cases can support supervised training, while unusual activity can be flagged for investigation. An anomaly is not proof of fraud, and a normal-looking transaction is not proof of safety.
+
+Write down the expected output before choosing a method: a predicted value, a predicted category, a grouping, or a representation. Then define how someone will judge whether it is useful. For a worked supervised example, continue to [building a simple Python model](/blog/how-to-build-a-simple-machine-learning-model-in-python).

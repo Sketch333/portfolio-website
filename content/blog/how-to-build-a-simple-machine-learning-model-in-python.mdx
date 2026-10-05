@@ -1,0 +1,90 @@
+---
+title: "How to Build a Simple Machine Learning Model in Python"
+slug: how-to-build-a-simple-machine-learning-model-in-python
+description: "Train a first scikit-learn regression pipeline, compare it with a baseline, and evaluate held-out predictions without fitting preprocessing on test data."
+excerpt: "Run a complete regression example, then learn why splitting data, keeping a baseline, and reading errors matter more than a flattering training score."
+tags: [Python, Machine Learning, scikit-learn]
+category: technical
+featured: true
+published: true
+---
+
+Your first machine learning model should make the whole workflow visible: define inputs and a target, separate training from testing, fit a model, and check its predictions. A small regression example is enough to practice all four.
+
+**This tutorial trains a linear regression pipeline on synthetic data and compares it with a simple baseline.** The data has an intentionally learnable numerical relationship. It demonstrates the mechanics; it is not evidence that the same model will predict real sales or house prices well.
+
+## What do you need before training?
+
+Use Python with scikit-learn installed in your project environment:
+
+```bash
+python -m pip install scikit-learn
+```
+
+In a real project, first define what one row represents and what numerical value you want to predict. Confirm that every input exists at prediction time. Inspect missing values and duplicates using the [data preprocessing guide](/blog/data-preprocessing-a-guide-to-cleaning-your-data).
+
+Here, `make_regression` creates numeric features and a continuous target locally, so you do not need to download a dataset or handle personal information. Its [official API reference](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_regression.html) documents how features, informative inputs, and noise are generated.
+
+## How do you train and test the model?
+
+Save this as `first_model.py`, then run `python first_model.py`:
+
+```python
+from sklearn.datasets import make_regression
+from sklearn.dummy import DummyRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+# Synthetic numeric data, not real customer or business records.
+X, y = make_regression(
+    n_samples=300,
+    n_features=4,
+    n_informative=3,
+    noise=15.0,
+    random_state=42,
+)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+baseline = DummyRegressor(strategy="mean")
+baseline.fit(X_train, y_train)
+
+model = make_pipeline(StandardScaler(), LinearRegression())
+model.fit(X_train, y_train)
+
+for name, estimator in [("Baseline", baseline), ("Linear model", model)]:
+    predictions = estimator.predict(X_test)
+    mae = mean_absolute_error(y_test, predictions)
+    r2 = r2_score(y_test, predictions)
+    print(f"{name}: MAE={mae:.2f}, R2={r2:.3f}")
+
+print("One held-out prediction:", model.predict(X_test[:1])[0])
+print("Its observed target:", y_test[0])
+```
+
+`X` holds the inputs and `y` holds the target. The split reserves 20% of the examples for evaluation. The fixed seeds make this exercise reproducible; they do not make the result more representative of a real problem.
+
+The baseline always predicts the training target's mean, as specified in the [DummyRegressor documentation](https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyRegressor.html). Linear regression fits coefficients by minimizing squared residuals; see its [API reference](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html).
+
+## Why put scaling inside a pipeline?
+
+The pipeline learns the scaling parameters from `X_train` during fitting and reuses them during prediction. This avoids estimating those parameters from the held-out data. The [scikit-learn pitfalls guide](https://scikit-learn.org/stable/common_pitfalls.html) explains the leakage risk.
+
+Scaling is included to demonstrate the preprocessing boundary; it is not a claim that ordinary least-squares regression always needs scaling to improve predictions. If you later add imputation or feature selection, keep learned preprocessing inside the training workflow too.
+
+## What do MAE and R-squared tell you?
+
+Mean absolute error reports the average size of prediction errors in target units. Lower is better on the same evaluation data. R-squared compares squared errors with a constant prediction based on the evaluation target's mean; it can be negative. The [model evaluation guide](https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics) explains these metrics.
+
+The synthetic target has no currency or physical unit, so do not interpret its MAE as dollars or demand. Compare the model with the baseline, then examine individual errors. A good average can still hide a poor prediction.
+
+## What should you do before using your own data?
+
+Match the split to the application. Future forecasting needs time-aware evaluation, and repeated observations from the same entity may need grouped splits. Use validation or cross-validation within the training data when selecting models; reserve the test set for final evaluation.
+
+A split helps reveal overfitting, but does not prevent it. After this exercise, try a real, well-documented dataset, define an appropriate baseline, and decide what size of error would make the prediction useful. That decision gives the score meaning.

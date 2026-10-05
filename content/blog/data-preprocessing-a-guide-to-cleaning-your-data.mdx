@@ -1,0 +1,64 @@
+---
+title: "Data Preprocessing: A Guide to Cleaning Your Data"
+slug: data-preprocessing-a-guide-to-cleaning-your-data
+description: "Clean missing values, duplicates, and outliers with a practical workflow, then choose encoding and scaling without leaking test data."
+excerpt: "A blank cell, a repeated order, and an unusually large purchase need different decisions. Here is how to make those decisions before training a model."
+tags: [Data Science, Data Preprocessing, Python]
+category: technical
+featured: true
+published: true
+---
+
+A sales export arrives with blank prices, inconsistent category names, and an order that appears twice. You can make the spreadsheet look tidy in minutes. Making it trustworthy takes a little more thought.
+
+**Data preprocessing means checking, cleaning, and transforming data for a specific analysis or model.** The goal is to preserve useful information while making the meaning of every row and column clear.
+
+## How do you start cleaning a dataset?
+
+Start by defining what one row represents. Is it an order, an item within an order, or a customer? That answer determines whether two similar rows are duplicates.
+
+Consider this illustrative export:
+
+```text
+order_id   category       quantity   unit_price
+1001       Books          2          12.00
+1001       Books          2          12.00
+1002       books          1          missing
+1003       Electronics    100        250.00
+```
+
+Before changing it, keep the raw file and write down the expected schema: identifiers, allowed categories, units, and missing-value conventions. Confirm whether the repeated order is an export error. Ask whether the large electronics order is wholesale. Neither decision should depend on which answer produces a nicer chart.
+
+Normalize known formatting differences, such as `Books` and `books`, with an explicit mapping. Record row counts before and after each operation so a future reviewer can explain where records went.
+
+## Should you delete rows with missing values?
+
+Only after asking why the value is missing and what deletion would exclude. In the example, a missing price might be recoverable from the order system. Replacing it with zero would assert that the item was free.
+
+If recovery is impossible, distinguish the task. A revenue report may need an explicit “unknown revenue” category. A predictive model may use imputation. Mean or median imputation fills numeric gaps; a frequent-category strategy can fill categorical gaps. These are estimates, not recovered facts. [Scikit-learn documents the available imputation strategies](https://scikit-learn.org/stable/modules/impute.html).
+
+Check missingness by relevant groups, too. If one sales channel has most of the missing prices, deleting those rows changes which customers your analysis represents. Document that limitation rather than hiding it behind a complete-looking dataset.
+
+## Should you remove every outlier?
+
+No. An outlier is a reason to investigate. The large order above could be an error, a rare legitimate purchase, or exactly the event your model needs to recognize.
+
+Use distribution plots and flags such as an interquartile-range rule to locate unusual observations. Verify units and source records before deleting, capping, or transforming them. [NIST distinguishes outlier identification from deciding how to accommodate those observations](https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm).
+
+For a fraud-detection problem, indiscriminately removing unusual transactions could remove the signal of interest. Keep a reason for every exclusion rule.
+
+## When should you split data to avoid leakage?
+
+Split before learning preprocessing values from the dataset. Fit imputation, scaling, and feature selection on the training portion; apply those learned transformations to the test portion. A pipeline helps keep these steps together. [Scikit-learn's leakage guide explains this boundary](https://scikit-learn.org/stable/common_pitfalls.html).
+
+Choose a split that matches future use. Forecasting needs a time-aware evaluation; repeated records from the same customer may need grouping. A random row split is not automatically appropriate. See the [cross-validation guide](https://scikit-learn.org/stable/modules/cross_validation.html).
+
+## Which encoding and scaling should you choose?
+
+For unordered categories, consider one-hot encoding. For genuinely ordered categories, preserve the intended order explicitly. Arbitrary category numbers can suggest a relationship you never meant to encode.
+
+Standardization centers and rescales features; min-max scaling maps the training range to chosen bounds. Neither choice follows simply from whether data is normally distributed. Match the transformation to the estimator and validate it. The [preprocessing guide](https://scikit-learn.org/stable/modules/preprocessing.html) explains these options and their sensitivities.
+
+Feature selection or dimensionality reduction can follow when there is a clear reason, such as redundant inputs or excessive complexity. More cleaning is not always better. Finish by checking ranges, categories, missingness, and row counts again, then save the transformation rules alongside the data.
+
+To see the training boundary in code, continue with [a simple Python machine learning model](/blog/how-to-build-a-simple-machine-learning-model-in-python).

@@ -1,0 +1,54 @@
+---
+title: "Deep Learning vs. Machine Learning: What's the Difference?"
+slug: deep-learning-vs-machine-learning-whats-the-difference
+description: "See how deep learning fits within machine learning and compare data, compute, explanation, and evaluation needs before choosing a model."
+excerpt: "A neural network is one option, not the default answer. Start with the data, the decision, and a baseline you can measure."
+tags: [Machine Learning, Deep Learning, Model Selection]
+category: technical
+featured: true
+published: true
+---
+
+You want to predict equipment failures from sensor readings. A colleague suggests a neural network. Another suggests a decision tree. Which one is right?
+
+Before comparing architectures, clarify the terminology: **deep learning is a subset of machine learning that uses neural networks with multiple layers.** The practical comparison is between deep learning and other machine learning approaches, such as linear models or tree-based methods. [Google Cloud's overview](https://cloud.google.com/discover/deep-learning-vs-machine-learning) explains that relationship.
+
+## What changes when you use deep learning?
+
+With a conventional tabular model, you might design inputs such as recent average temperature, vibration variability, and time since maintenance. A deep model may learn useful representations from richer inputs, such as sequences or images.
+
+That representation learning is a central attraction of deep learning. It does not remove the need to collect suitable data, define targets, or evaluate the result. Choosing what the model sees remains an engineering decision.
+
+Both approaches can support prediction. The supervised-versus-unsupervised distinction is a separate question about the training signal, explained in [the learning-family comparison](/blog/supervised-vs-unsupervised-learning-key-differences).
+
+## When should you start with a simpler model?
+
+For the hypothetical maintenance project, first inspect the available evidence. If you have a modest table of summarized sensor measurements and maintenance outcomes, try a straightforward baseline before adding architectural complexity.
+
+Use that first model to expose practical questions: are failure labels reliable? Do the features arrive early enough to help a technician? Is evaluation keeping observations from the same machine appropriately separated? What happens when a sensor stops reporting?
+
+A simpler experiment gives you something concrete to compare. It is not a promise that a linear model or tree will win; it is a way to discover whether the data and workflow support the task at all.
+
+## When is deep learning worth evaluating?
+
+Consider it when the inputs and task make learned representations useful—for example, inspecting product images, analyzing audio, or working with complex sequences. Compare the candidate against a baseline using the same decision criteria.
+
+You do not always need to train a network from scratch. Transfer learning reuses representations from a pretrained model and can adapt them to a new task. The [TensorFlow transfer-learning tutorial](https://www.tensorflow.org/tutorials/images/transfer_learning) demonstrates feature extraction and fine-tuning for image classification.
+
+That option changes the data and compute discussion, but it does not guarantee suitability. Check whether the pretrained model's inputs and learned representations are relevant to your task, and evaluate on data that reflects intended use.
+
+## Does deep learning always require more data and a GPU?
+
+No universal threshold separates the approaches. Training a large network from scratch can be demanding, but using a small or pretrained model is a different workload. Dataset size alone also says little about label quality, coverage, or the difficulty of the target.
+
+Estimate the actual experiment: training time, memory, inference latency, and operating cost. Measure them with your intended inputs. Treat broad claims such as “deep learning always needs massive labeled datasets” as an inadequate basis for a project decision.
+
+For the maintenance example, a slightly more accurate model may still be impractical if it cannot produce a result before the inspection decision. Define that constraint before optimizing a benchmark score.
+
+## How should you compare explanation and reliability?
+
+Some models are easier to inspect than others, but “machine learning is interpretable” is too broad. Ask what explanation the user actually needs: the main inputs behind an alert, a traceable rule, or evidence that the system behaves consistently in relevant conditions.
+
+Evaluate errors, not just the headline metric. For equipment alerts, missed failures and unnecessary inspections create different burdens. Inspect performance on different machines and operating conditions, and decide how uncertain cases are reviewed.
+
+The next step is a small comparison with a written decision rule: keep the simpler approach unless the alternative offers a worthwhile improvement under the same evaluation and operational constraints. The [Python regression tutorial](/blog/how-to-build-a-simple-machine-learning-model-in-python) is a useful place to practice that baseline-first habit.
