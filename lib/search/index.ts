@@ -24,7 +24,10 @@ export async function buildSearchIndex(): Promise<SearchRecord[]> {
     })),
     ...experience.map((entry, index) => ({
       id: `experience:${index}`, type: 'experience' as const,
-      title: entry.company, description: `${entry.role} · ${entry.periodLabel}`,
+      title: entry.company,
+      description: entry.periodLabel === 'Dates not supplied'
+        ? entry.role
+        : `${entry.role} · ${entry.periodLabel}`,
       href: '/#experience', keywords: [entry.company, entry.role, ...entry.highlights],
     })),
   ];

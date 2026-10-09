@@ -11,6 +11,10 @@ describe('canonical portfolio search', () => {
   it('finds SprintX by its role and links to experience', async () => {
     expect(searchPortfolio('Business Developer', await buildSearchIndex())[0]).toMatchObject({ title: 'SprintX', type: 'experience', href: '/#experience' });
   });
+  it('does not expose internal missing-date placeholders in experience results', async () => {
+    const records = await buildSearchIndex();
+    expect(records.filter(record => record.type === 'experience').every(record => !record.description.includes('Dates not supplied'))).toBe(true);
+  });
   it('does not return results for blank or unmatched queries', async () => {
     const records = await buildSearchIndex();
     expect(searchPortfolio(' \n ', records)).toEqual([]);
