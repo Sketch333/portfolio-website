@@ -1,0 +1,61 @@
+.writing-shell { --writing-accent: #1754b5; background: var(--background); color: var(--foreground); padding: 4rem 1.5rem 6rem; }
+.dark .writing-shell { --writing-accent: #79caff; }
+.writing-wrap { max-width: 1120px; margin: 0 auto; }
+.writing-shell a { text-underline-offset: .25em; }
+.writing-shell a:focus-visible { outline: 2px solid var(--writing-accent); outline-offset: 5px; border-radius: 2px; }
+.writing-shell a:hover { color: var(--writing-accent); }
+.writing-kicker { font: 500 .7rem/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--writing-accent); }
+.writing-index-hero { padding: 1rem 0 3rem; border-bottom: 1px solid var(--border); }
+.writing-index-hero h1 { font-size: clamp(3rem, 7.3vw, 6rem); font-weight: 500; letter-spacing: -.065em; line-height: 1.02; margin: 1.8rem 0; }
+.writing-index-hero h1 > span { color: var(--writing-accent); }
+.writing-deck { max-width: 720px; font-size: clamp(1.1rem, 2vw, 1.3rem); line-height: 1.75; color: var(--muted-foreground); }
+.writing-index-meta { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 2.5rem; font: .75rem/1.6 var(--font-mono); }
+.writing-index-meta a { margin-left: auto; text-decoration: underline; }
+.writing-category { margin-top: 3rem; }
+.writing-category-heading { display: flex; flex-wrap: wrap; gap: .5rem 2rem; align-items: baseline; padding-bottom: 1.5rem; }
+.writing-category-heading h2 { font-size: 1.4rem; font-weight: 500; letter-spacing: -.03em; }
+.writing-category-heading p { color: var(--muted-foreground); font-size: .9rem; }
+.writing-list { list-style: none; padding: 0; }
+.writing-entry { display: grid; grid-template-columns: 4rem 1fr; gap: 1.5rem; border-top: 1px solid var(--border); padding: 2rem 0 2.3rem; }
+.writing-number { font: .8rem/1.8 var(--font-mono); color: var(--muted-foreground); }
+.writing-entry h3 { max-width: 830px; margin: .6rem 0 .8rem; font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.25; }
+.writing-entry h3 span { color: var(--writing-accent); font-size: .8em; }
+.writing-excerpt { max-width: 760px; color: var(--muted-foreground); line-height: 1.75; }
+.writing-back { font: .8rem/1.7 var(--font-mono); text-decoration: underline; }
+.writing-header { border-bottom: 1px solid var(--border); padding-bottom: 2.5rem; }
+.writing-header > .writing-kicker { margin-top: 3rem; }
+.writing-header h1 { max-width: 990px; font-size: clamp(2.5rem, 5.4vw, 4.5rem); line-height: 1.08; letter-spacing: -.055em; font-weight: 500; margin: 1.3rem 0 1.5rem; overflow-wrap: anywhere; }
+.writing-byline { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 2rem; font-size: .85rem; }
+.writing-byline a { text-decoration: underline; }
+.writing-tags { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; list-style: none; margin-top: 1.3rem; }
+.writing-tags li { border: 1px solid var(--border); padding: .3rem .65rem; font: .7rem/1.6 var(--font-mono); }
+.writing-reading-layout { display: grid; grid-template-columns: 240px minmax(0, 720px); gap: 4rem; padding-top: 3rem; align-items: start; }
+.writing-toc { position: sticky; top: 6rem; max-height: calc(100vh - 8rem); overflow: auto; }
+.writing-toc ol { list-style: none; margin: 1rem 0 0; padding: 0; }
+.writing-toc li { border-top: 1px solid var(--border); font-size: .8rem; line-height: 1.6; }
+.writing-toc a { display: block; padding: .7rem .2rem; }
+.writing-toc-sub { padding-left: 1rem; }
+.writing-body { min-width: 0; grid-column: 2; font-size: 1.08rem; line-height: 1.85; overflow-wrap: anywhere; }
+.writing-body > :first-child { margin-top: 0; }
+.writing-body p { line-height: 1.85; text-wrap: pretty; margin-top: 1.2rem; }
+.writing-body h2 { margin-top: 3.4rem; font-size: 1.7rem; line-height: 1.3; letter-spacing: -.035em; font-weight: 500; }
+.writing-body h3 { line-height: 1.4; font-weight: 500; }
+.writing-body a { color: var(--writing-accent); }
+.writing-body ul, .writing-body ol { padding-left: 1.5rem; margin: 1.3rem 0; }
+.writing-body ul { list-style: disc; }
+.writing-body ol { list-style: decimal; }
+.writing-body li { padding-left: .3rem; margin-top: .7rem; }
+.writing-body pre { font-size: .8rem; line-height: 1.75; background: var(--muted); overflow-wrap: normal; }
+.writing-body :not(pre) > code { font-size: .85em; background: var(--muted); padding: .1em .3em; }
+.writing-body blockquote { border-left: 2px solid var(--writing-accent); padding-left: 1.5rem; margin: 2rem 0; }
+.writing-body hr { margin: 3rem 0; border-color: var(--border); }
+.writing-related { margin-top: 4rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+.writing-related h2 { font-size: 1.7rem; margin: .5rem 0 1.5rem; }
+.writing-related ul { display: grid; gap: 1.5rem; list-style: none; padding: 0; }
+.writing-related li a { font-size: 1.2rem; text-decoration: underline; }
+.writing-related li p { color: var(--muted-foreground); margin-top: .5rem; max-width: 700px; line-height: 1.7; }
+.writing-neighbors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin: 2.5rem 0; }
+.writing-neighbors > a { border-top: 1px solid var(--border); padding-top: 1.4rem; font-size: 1.2rem; line-height: 1.5; }
+.writing-neighbors .writing-kicker { display: block; margin-bottom: .7rem; }
+@media (max-width: 850px) { .writing-reading-layout { display: block; } .writing-toc { position: static; max-height: none; margin-bottom: 3rem; } .writing-entry { grid-template-columns: 2rem 1fr; gap: .75rem; } }
+@media (max-width: 520px) { .writing-shell { padding: 2rem 1.25rem 4rem; } .writing-index-meta a { margin-left: 0; } .writing-neighbors { grid-template-columns: 1fr; } .writing-header h1 { font-size: 2.5rem; } }

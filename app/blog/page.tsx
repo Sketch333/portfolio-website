@@ -1,48 +1,23 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { getAllPosts } from '@/lib/content/blog';
+import { readingMinutes } from '@/lib/content/headings';
+import './writing.css';
 
 export const metadata: Metadata = {
   title: 'Writing | Aon Kazmi',
-  description: 'Writing about AI, data, and product work by Aon Kazmi.',
+  description: 'Practical notes on machine learning, data, and the decisions behind useful systems by Aon Kazmi.',
 };
 
 export default async function BlogPage() {
   const posts = await getAllPosts();
-
-  if (posts.length === 0 && process.env.NODE_ENV !== 'development') notFound();
-
-  return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
-      <p className="text-sm font-medium tracking-[0.2em] text-muted-foreground">EDITORIAL TECH</p>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Writing</h1>
-      {posts.length === 0 ? (
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Writing migration in progress</p>
-      ) : (
-        <ul className="mt-10 space-y-5">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <article className="rounded-xl border bg-card p-6 text-card-foreground">
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="rounded-sm underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-3 leading-7 text-muted-foreground">{post.description}</p>
-                {post.publishedAt && (
-                  <time className="mt-4 block text-sm text-muted-foreground" dateTime={post.publishedAt}>
-                    {post.publishedAt}
-                  </time>
-                )}
-              </article>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
+  const categories = [{ key: 'technical', label: 'Technical notes', description: 'Clear explanations. Practical decisions.' }, { key: 'build-journal', label: 'Build journal', description: 'Notes from making things work.' }] as const;
+  return <section className="writing-shell"><div className="writing-wrap">
+    <header className="writing-index-hero"><p className="writing-kicker">Writing / Data · Models · Decisions</p><h1>Ideas, put<br />into practice<span aria-hidden="true">.</span></h1><p className="writing-deck">Notes on understanding data, choosing models, and asking better questions before building.</p><div className="writing-index-meta"><span>{String(posts.length).padStart(2, '0')} articles</span><span>By Aon Kazmi</span><Link href="/projects">Explore the work ↗</Link></div></header>
+    {categories.map(category => {
+      const group = posts.filter(post => post.category === category.key).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+      if (!group.length) return null;
+      return <section key={category.key} aria-labelledby={category.key} className="writing-category"><div className="writing-category-heading"><h2 id={category.key}>{category.label}</h2><p>{category.description}</p></div><ol className="writing-list">{group.map((post, index) => <li key={post.slug}><article className="writing-entry"><span aria-hidden="true" className="writing-number">{String(index + 1).padStart(2, '0')}</span><div><p className="writing-kicker">{post.tags[0]} / {readingMinutes(post.body)} min read</p><h3><Link href={`/blog/${post.slug}`}>{post.title}<span aria-hidden="true"> ↗</span></Link></h3><p className="writing-excerpt">{post.excerpt}</p></div></article></li>)}</ol></section>;
+    })}
+  </div></section>;
 }

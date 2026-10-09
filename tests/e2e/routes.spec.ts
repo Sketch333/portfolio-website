@@ -140,12 +140,12 @@ test('resume supplies a real contact method and does not expose an unverified do
   await expect(page.getByRole('link', { name: /download/i })).toHaveCount(0);
 });
 
-test('development blog gate shows only the migration state and no post cards', async ({ page }) => {
+test('writing index exposes the eight published launch articles', async ({ page }) => {
   await page.goto('/blog');
 
-  await expect(page.getByRole('heading', { name: 'Writing' })).toBeVisible();
-  await expect(page.getByText('Writing migration in progress', { exact: true })).toBeVisible();
-  await expect(page.locator('article')).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Ideas, put');
+  await expect(page.getByRole('heading', { name: 'Technical notes' })).toBeVisible();
+  await expect(page.locator('.writing-entry')).toHaveCount(8);
 });
 
 test('content routes have no horizontal overflow across representative viewports', async ({ page }) => {
