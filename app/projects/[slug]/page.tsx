@@ -1,3 +1,5 @@
+import { buildPageMetadata } from '@/lib/metadata/build-metadata';
+import { breadcrumbJsonLd, serializeJsonLd } from '@/lib/metadata/json-ld';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProjectCaseStudy } from '@/components/projects/project-case-study';
@@ -24,16 +26,15 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
   if (!project) return { title: 'Project not found | Aon Kazmi', robots: { index: false } };
 
-  return {
-    title: `${project.title} | Aon Kazmi`,
-    description: project.description,
-  };
+  return buildPageMetadata({ ...project, pathname: `/projects/${project.slug}` });
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
+
+  const breadcrumbs = breadcrumbJsonLd([{ name: 'Home', pathname: '/' }, { name: 'Projects', pathname: '/projects' }, { name: project.title, pathname: `/projects/${project.slug}` }]);
 
   const presentation = getProjectPresentation(project);
   const sequence = [
@@ -62,5 +63,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           : presentation.demo === 'bi-dashboard'
             ? <BiDashboardExplorer />
             : undefined;
-  return <ProjectCaseStudy project={project} presentation={presentation} demo={demo} nextProject={nextProject} />;
+  return <>
+    {breadcrumbs ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbs) }} /> : null}
+    <ProjectCaseStudy project={project} presentation={presentation} demo={demo} nextProject={nextProject} />
+  </>;
 }

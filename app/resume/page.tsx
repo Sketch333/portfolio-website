@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import { siteConfig } from '@/lib/metadata/site';
 
-export const metadata: Metadata = {
-  title: 'Résumé | Aon Kazmi',
+export const metadata = buildPageMetadata({
+  title: 'Résumé',
   description: 'Contact Aon Kazmi for the current résumé while the final public asset is confirmed.',
-};
+  pathname: '/resume',
+});
 
 export default function ResumePage() {
   return (

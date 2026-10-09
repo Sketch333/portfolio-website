@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
+import { personJsonLd, serializeJsonLd } from '@/lib/metadata/json-ld';
+import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import { getExperience } from '@/lib/content/experience';
 
-export const metadata: Metadata = {
-  title: 'About | Aon Kazmi',
+export const metadata = buildPageMetadata({
+  title: 'About',
   description: 'Aon Kazmi works across AI, data, product, and business opportunities.',
-};
+  pathname: '/about',
+});
 
 function suppliedPeriod(startDate?: string, endDate?: string) {
   if (startDate && endDate) return `${startDate} – ${endDate}`;
@@ -17,6 +19,7 @@ export default async function AboutPage() {
 
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd()) }} />
       <p className="text-sm font-medium tracking-[0.2em] text-muted-foreground">ABOUT</p>
       <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">About</h1>
       <p className="mt-6 text-lg leading-8 text-muted-foreground">

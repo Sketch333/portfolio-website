@@ -1,12 +1,13 @@
-import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import { ProjectCard } from '@/components/projects/project-card';
 import { getAllProjects } from '@/lib/content/projects';
 import type { ProjectTier } from '@/types/content';
 
-export const metadata: Metadata = {
-  title: 'Projects | Aon Kazmi',
+export const metadata = buildPageMetadata({
+  title: 'Projects',
   description: 'Selected AI, data, and product projects by Aon Kazmi.',
-};
+  pathname: '/projects',
+});
 
 const tiers: ReadonlyArray<{ tier: ProjectTier; title: string }> = [
   { tier: 'flagship', title: 'Flagship projects' },

@@ -1,13 +1,14 @@
-import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/content/blog';
 import { readingMinutes } from '@/lib/content/headings';
 import './writing.css';
 
-export const metadata: Metadata = {
-  title: 'Writing | Aon Kazmi',
+export const metadata = buildPageMetadata({
+  title: 'Writing',
   description: 'Practical notes on machine learning, data, and the decisions behind useful systems by Aon Kazmi.',
-};
+  pathname: '/blog',
+});
 
 export default async function BlogPage() {
   const posts = await getAllPosts();
