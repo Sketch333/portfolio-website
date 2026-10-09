@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SearchDialog } from "@/components/search/search-dialog";
+import type { SearchRecord } from "@/types/search";
 
 import { MobileNav, type NavigationItem } from "@/components/layout/mobile-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -15,7 +17,11 @@ const contactHref = "/#contact";
 const navigationLinkClassName =
   "inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
-export function SiteHeader() {
+export function SiteHeader({
+  searchRecords = [],
+}: {
+  searchRecords?: readonly SearchRecord[];
+}) {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
@@ -43,6 +49,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:ml-2">
+          <SearchDialog records={searchRecords} />
           <div className="flex min-h-11 min-w-20 items-center justify-end">
             <ThemeToggle />
           </div>
@@ -57,6 +64,17 @@ export function SiteHeader() {
       </div>
 
       <noscript>
+        <nav
+          aria-label="Search fallback"
+          className="flex flex-wrap gap-3 border-t px-4 py-2 text-sm"
+        >
+          <Link href="/projects" className={navigationLinkClassName}>
+            Browse projects
+          </Link>
+          <Link href="/blog" className={navigationLinkClassName}>
+            Browse writing
+          </Link>
+        </nav>
         <nav
           aria-label="Primary navigation without JavaScript"
           className="flex flex-wrap gap-1 border-t px-4 py-2 md:hidden"

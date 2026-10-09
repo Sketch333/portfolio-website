@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { siteConfig } from "@/lib/metadata/site";
+import { buildSearchIndex } from "@/lib/search";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,11 +12,12 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const searchRecords = await buildSearchIndex();
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
@@ -31,7 +33,7 @@ export default function RootLayout({
           >
             Skip to content
           </a>
-          <SiteHeader />
+          <SiteHeader searchRecords={searchRecords} />
           <main
             id="main-content"
             tabIndex={-1}
