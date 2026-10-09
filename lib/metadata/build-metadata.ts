@@ -8,7 +8,9 @@ export function absoluteUrl(pathname: string): string | undefined {
     const site = new URL(base);
     if (!['https:', 'http:'].includes(site.protocol) || site.username || site.password) return undefined;
     if (!pathname.startsWith('/') || pathname.startsWith('//')) return undefined;
-    return new URL(pathname, site.origin).toString();
+    const resolved = new URL(pathname, site.origin);
+    if (resolved.origin !== site.origin) return undefined;
+    return resolved.toString();
   } catch {
     return undefined;
   }

@@ -25,6 +25,12 @@ describe('metadata', () => {
       expect(absoluteUrl('/')).toBeUndefined();
     }
   });
+  it('rejects paths that URL normalization would resolve to another origin', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://portfolio.example');
+    expect(absoluteUrl('/\\evil.example/image.png')).toBeUndefined();
+    expect(absoluteUrl('/\t/evil.example/image.png')).toBeUndefined();
+    expect(buildPageMetadata({ ...post, pathname: '/blog/cleaning-data', coverImage: '/\\evil.example/image.png' }).openGraph).not.toHaveProperty('images');
+  });
   it('includes real cover assets only when configured and never invents images', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://portfolio.example');
     expect(buildPageMetadata({ ...post, pathname: '/blog/cleaning-data' }).openGraph).not.toHaveProperty('images');
