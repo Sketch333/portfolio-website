@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 test("home page exposes the primary positioning", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Syed Aon Muhammad Kazmi — AI, Data & Product");
+  await expect(page).toHaveTitle("From data to products | Aon Kazmi");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
     "I build AI-driven systems with technical depth and business impact — spanning intelligent automation, full-stack products, analytics, and product strategy.",

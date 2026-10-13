@@ -35,7 +35,12 @@ test("home follows the complete narrative order with canonical work and conventi
     page
       .getByRole("region", { name: "Writing / Build Journal" })
       .locator("article"),
-  ).toHaveCount(0);
+  ).toHaveCount(3);
+  const writing = page.getByRole('region', { name: 'Writing / Build Journal' });
+  await expect(writing.locator('article time')).toHaveCount(0);
+  for (const link of await writing.getByRole('link').all()) {
+    await expect(link).toHaveAttribute('href', /^\/blog\/[a-z0-9-]+$/);
+  }
   await expect(
     page
       .getByRole("region", { name: "Ask My Portfolio" })
