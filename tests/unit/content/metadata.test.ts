@@ -1,10 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { absoluteUrl, buildPageMetadata } from '@/lib/metadata/build-metadata';
+import { absoluteUrl, buildPageMetadata, buildRootMetadata } from '@/lib/metadata/build-metadata';
 import { articleJsonLd, breadcrumbJsonLd, personJsonLd, serializeJsonLd } from '@/lib/metadata/json-ld';
 
 const post = { title: 'Cleaning data', description: 'Practical data cleaning.', slug: 'cleaning-data', tags: ['Data'], category: 'technical' as const, excerpt: 'Clean data.', published: true, featured: true, body: 'Body' };
 afterEach(() => vi.unstubAllEnvs());
 describe('metadata', () => {
+  it('sets the configured base for inherited file-based social images on fallback routes', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://portfolio.example');
+    expect(buildRootMetadata().metadataBase?.toString()).toBe('https://portfolio.example/');
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '');
+    expect(buildRootMetadata().metadataBase).toBeUndefined();
+  });
   it('formats distinct content titles and preserves descriptions', () => {
     expect(buildPageMetadata({ ...post, pathname: '/blog/cleaning-data', type: 'article' })).toMatchObject({ title: 'Cleaning data | Aon Kazmi', description: 'Practical data cleaning.', openGraph: { type: 'article', title: 'Cleaning data | Aon Kazmi' } });
     expect(buildPageMetadata({ title: 'Scheduler', description: 'Constraint scheduling.', pathname: '/projects/scheduler' }).title).toBe('Scheduler | Aon Kazmi');

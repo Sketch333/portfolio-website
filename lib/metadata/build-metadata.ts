@@ -1,4 +1,14 @@
 import type { Metadata } from 'next';
+import { siteConfig } from './site';
+
+export function buildRootMetadata(): Metadata {
+  const base = absoluteUrl('/');
+  return {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    ...(base ? { metadataBase: new URL(base) } : {}),
+  };
+}
 
 /** Uses the configured, verified deployment origin; never guesses a domain. */
 export function absoluteUrl(pathname: string): string | undefined {

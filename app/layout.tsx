@@ -3,14 +3,11 @@ import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { siteConfig } from "@/lib/metadata/site";
+import { buildRootMetadata } from "@/lib/metadata/build-metadata";
 import { buildSearchIndex } from "@/lib/search";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
-};
+export const metadata: Metadata = buildRootMetadata();
 
 export default async function RootLayout({
   children,
