@@ -2,6 +2,7 @@ import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/content/blog';
 import { readingMinutes } from '@/lib/content/headings';
+import { formatPublicationDate } from '@/lib/content/publication-date';
 import './writing.css';
 
 export const metadata = buildPageMetadata({
@@ -18,7 +19,7 @@ export default async function BlogPage() {
     {categories.map(category => {
       const group = posts.filter(post => post.category === category.key).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
       if (!group.length) return null;
-      return <section key={category.key} aria-labelledby={category.key} className="writing-category"><div className="writing-category-heading"><h2 id={category.key}>{category.label}</h2><p>{category.description}</p></div><ol className="writing-list">{group.map((post, index) => <li key={post.slug}><article className="writing-entry"><span aria-hidden="true" className="writing-number">{String(index + 1).padStart(2, '0')}</span><div><p className="writing-kicker">{post.tags[0]} / {readingMinutes(post.body)} min read</p><h3><Link href={`/blog/${post.slug}`}>{post.title}<span aria-hidden="true"> ↗</span></Link></h3><p className="writing-excerpt">{post.excerpt}</p></div></article></li>)}</ol></section>;
+      return <section key={category.key} aria-labelledby={category.key} className="writing-category"><div className="writing-category-heading"><h2 id={category.key}>{category.label}</h2><p>{category.description}</p></div><ol className="writing-list">{group.map((post, index) => <li key={post.slug}><article className="writing-entry"><span aria-hidden="true" className="writing-number">{String(index + 1).padStart(2, '0')}</span><div><p className="writing-kicker">{post.tags[0]} / {readingMinutes(post.body)} min read{post.publishedAt && <> / <time dateTime={post.publishedAt}>{formatPublicationDate(post.publishedAt)}</time></>}</p><h3><Link href={`/blog/${post.slug}`}>{post.title}<span aria-hidden="true"> ↗</span></Link></h3><p className="writing-excerpt">{post.excerpt}</p></div></article></li>)}</ol></section>;
     })}
   </div></section>;
 }
