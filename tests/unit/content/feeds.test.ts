@@ -36,7 +36,7 @@ describe('canonical indexing feeds', () => {
   });
   it('rejects malformed and local production origins', () => {
     vi.stubEnv('NODE_ENV', 'production');
-    for (const url of ['invalid', 'https://user:pass@example.test', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://[::1]:3000']) {
+    for (const url of ['invalid', 'https://user:pass@example.test', 'http://localhost:3000', 'http://localhost.:3000', 'http://127.0.0.1:3000', 'http://[::1]:3000']) {
       vi.stubEnv('NEXT_PUBLIC_SITE_URL', url);
       expect(() => indexingSiteUrl()).toThrow(/NEXT_PUBLIC_SITE_URL/);
     }

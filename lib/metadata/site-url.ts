@@ -8,7 +8,7 @@ export function indexingSiteUrl(): string {
   let site: URL;
   try { site = new URL(configured); } catch { throw error; }
   if (!['http:', 'https:'].includes(site.protocol) || site.username || site.password) throw error;
-  const hostname = site.hostname.toLowerCase();
+  const hostname = site.hostname.toLowerCase().replace(/\.+$/, '');
   if (production && (hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '[::1]' || hostname === '0.0.0.0' || hostname.startsWith('127.'))) throw error;
   return site.origin;
 }
