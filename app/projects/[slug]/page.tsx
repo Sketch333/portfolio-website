@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
   if (!project) return { title: 'Project not found | Aon Kazmi', robots: { index: false } };
 
-  return buildPageMetadata({ ...project, pathname: `/projects/${project.slug}` });
+  return buildPageMetadata({ ...project, pathname: `/projects/${project.slug}`, ogImage: `/projects/${project.slug}/opengraph-image` });
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {

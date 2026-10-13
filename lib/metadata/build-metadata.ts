@@ -22,6 +22,7 @@ type PageMetadataInput = {
   pathname: string;
   type?: 'website' | 'article';
   coverImage?: string;
+  ogImage?: string;
   publishedAt?: string;
   updatedAt?: string;
 };
@@ -29,7 +30,8 @@ type PageMetadataInput = {
 export function buildPageMetadata(input: PageMetadataInput): Metadata {
   const title = `${input.title} | Aon Kazmi`;
   const url = absoluteUrl(input.pathname);
-  const image = input.coverImage ? absoluteUrl(input.coverImage) : undefined;
+  const imagePath = input.ogImage ?? input.coverImage;
+  const image = imagePath ? absoluteUrl(imagePath) : undefined;
   return {
     title,
     description: input.description,

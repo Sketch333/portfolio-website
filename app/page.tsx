@@ -13,7 +13,7 @@ import { getAllProjects } from "@/lib/content/projects";
 import { getExperience } from "@/lib/content/experience";
 import { getAllPosts } from "@/lib/content/blog";
 
-export const metadata = buildPageMetadata({ title: 'From data to products', description: siteConfig.description, pathname: '/' });
+export const metadata = buildPageMetadata({ title: 'From data to products', description: siteConfig.description, pathname: '/', ogImage: '/opengraph-image' });
 
 export default async function HomePage() {
   const [projects, experience, posts] = await Promise.all([

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   if (!post) return { title: 'Article not found | Aon Kazmi', robots: { index: false } };
 
-  return buildPageMetadata({ ...post, pathname: `/blog/${post.slug}`, type: 'article' });
+  return buildPageMetadata({ ...post, pathname: `/blog/${post.slug}`, type: 'article', ogImage: `/blog/${post.slug}/opengraph-image` });
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
