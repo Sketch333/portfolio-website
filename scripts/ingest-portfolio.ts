@@ -4,6 +4,10 @@ import { getAllProjects } from '@/lib/content/projects';
 import { getAllPosts } from '@/lib/content/blog';
 import { getExperience } from '@/lib/content/experience';
 import { chunkContent, type ChunkSource } from '@/lib/ai/chunking';
+import { createHash } from 'node:crypto';
+import { z } from 'zod';
+import { portfolioChunkSchema } from '@/lib/ai/schemas';
+import type { PortfolioChunk } from '@/types/ai';
 
 /** Canonical repository content only: no environment, provider, or DB imports. */
 export async function buildIngestionRecords() {
@@ -23,9 +27,40 @@ export async function buildIngestionRecords() {
   return { sources, chunks: sources.flatMap(source => chunkContent(source)) };
 }
 
+export async function ingestChunks(chunks: readonly PortfolioChunk[]) {
+  const validated = z.array(portfolioChunkSchema).parse(chunks);
+  const { getPortfolioContentHashes, upsertPortfolioChunks } = await import('@/lib/db/vector-search');
+  const hashes = await getPortfolioContentHashes(validated.map(chunk => chunk.id));
+  const changed = validated.map(chunk => ({ ...chunk, contentHash: createHash('sha256').update(chunk.text).digest('hex') }))
+    .filter(chunk => hashes.get(chunk.id) !== chunk.contentHash);
+  if (!changed.length) return { updated: 0, skipped: validated.length };
+  const { embedTexts } = await import('@/lib/ai/model');
+  const embeddings = await embedTexts(changed.map(chunk => chunk.text));
+  const updatedAt = new Date();
+  // No mutation occurs until every provider batch has succeeded and been validated.
+  await upsertPortfolioChunks(changed.map((chunk, index) => ({ ...chunk, embedding: embeddings[index], updatedAt })));
+  return { updated: changed.length, skipped: validated.length - changed.length };
+}
+
 export async function runIngestion(args: string[]) {
-  if (args.length !== 1 || args[0] !== '--dry-run') {
-    throw new Error('Only --dry-run is supported until embedding and database integration are configured.');
+  if (args.length !== 1 || !['--dry-run', '--development'].includes(args[0])) {
+    throw new Error('Choose --dry-run or explicit --development ingestion.');
+  }
+  if (args[0] === '--development') {
+    if (process.env.NODE_ENV === 'production' || process.env.MONGODB_INGESTION_ENV !== 'development') {
+      throw new Error('Development ingestion requires MONGODB_INGESTION_ENV=development and a non-production runtime.');
+    }
+    const { getAiEnv, getMongoEnv } = await import('@/lib/ai/env');
+    getAiEnv(); getMongoEnv();
+    const { closeMongoConnection } = await import('@/lib/db/mongo');
+    try {
+      const { chunks } = await buildIngestionRecords();
+      const result = await ingestChunks(chunks);
+      console.log(`Development ingestion: ${result.updated} updated, ${result.skipped} unchanged`);
+    } finally {
+      await closeMongoConnection();
+    }
+    return;
   }
   const records = await buildIngestionRecords();
   console.log('Dry run — canonical portfolio content only');
@@ -36,8 +71,9 @@ export async function runIngestion(args: string[]) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  runIngestion(process.argv.slice(2)).catch(error => {
-    console.error(error instanceof Error ? error.message : 'Ingestion failed');
+  runIngestion(process.argv.slice(2)).catch(() => {
+    // Provider/driver errors may include credentials or request bodies.
+    console.error('Ingestion failed; check development configuration and provider/database availability.');
     process.exitCode = 1;
   });
 }

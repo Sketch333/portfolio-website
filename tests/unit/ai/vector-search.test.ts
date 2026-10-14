@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EmbeddedPortfolioChunk } from '@/types/ai';
-const db = vi.hoisted(() => ({ bulkWrite: vi.fn(), aggregate: vi.fn(), collection: vi.fn(), connect: vi.fn(), construct: vi.fn() }));
-vi.mock('mongodb', () => ({ MongoClient: class { constructor(...args: unknown[]) { db.construct(...args); } connect() { return db.connect().then(() => this); } db() { return { collection: db.collection }; } } }));
+const db = vi.hoisted(() => ({ bulkWrite: vi.fn(), aggregate: vi.fn(), collection: vi.fn(), connect: vi.fn(), construct: vi.fn(), close: vi.fn() }));
+vi.mock('mongodb', () => ({ MongoClient: class { constructor(...args: unknown[]) { db.construct(...args); } connect() { return db.connect().then(() => this); } close() { return db.close(); } db() { return { collection: db.collection }; } } }));
 const chunk: EmbeddedPortfolioChunk = { id: 'stable-id', type: 'project', slug: 'scheduler', title: 'Scheduler', href: '/projects/scheduler', text: 'Verified text.', index: 0, embedding: [0.2, 0.8], contentHash: 'hash', updatedAt: new Date('2026-01-01') };
 const row = (id = 'stable-id') => ({ id, type: 'project', title: 'Scheduler', href: '/projects/scheduler', text: 'Verified text.', score: 0.8 });
 beforeEach(() => { vi.resetModules(); vi.clearAllMocks(); vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017'); vi.stubEnv('MONGODB_DB', 'test'); db.connect.mockResolvedValue(undefined); db.collection.mockReturnValue({ bulkWrite: db.bulkWrite, aggregate: db.aggregate }); db.bulkWrite.mockResolvedValue({}); });
@@ -66,4 +66,20 @@ describe('vector adapter', () => {
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
     await expect(searchPortfolioVectors([1])).rejects.toThrow();
   });
+});
+
+it('reads stored hashes using stable IDs and a narrow projection', async () => {
+  const find = vi.fn().mockReturnValue({ toArray: async () => [{ _id: 'stable-id', contentHash: 'hash' }] });
+  db.collection.mockReturnValue({ find });
+  const { getPortfolioContentHashes } = await import('@/lib/db/vector-search');
+  expect(await getPortfolioContentHashes(['stable-id'])).toEqual(new Map([['stable-id', 'hash']]));
+  expect(find).toHaveBeenCalledWith({ _id: { $in: ['stable-id'] } }, { projection: { _id: 1, contentHash: 1 } });
+});
+
+it('closes and clears the cached client for command lifecycle cleanup', async () => {
+  const { getMongoDb, closeMongoConnection } = await import('@/lib/db/mongo');
+  await getMongoDb();
+  await closeMongoConnection();
+  expect(db.close).toHaveBeenCalledTimes(1);
+  await getMongoDb(); expect(db.construct).toHaveBeenCalledTimes(2);
 });

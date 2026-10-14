@@ -76,7 +76,7 @@ describe('ingestion command', () => {
       expect(output).toContain('Dry run');
     } finally { rmSync(directory, { recursive: true, force: true }); }
   });
-  it('fails closed when live ingestion is requested before provider integration', () => {
+  it('fails closed when ingestion has no deliberate mode', () => {
     expect(() => execFileSync(process.execPath, ['--import', 'tsx', 'scripts/ingest-portfolio.ts'], { stdio: 'pipe' })).toThrow();
   });
 });

@@ -18,6 +18,14 @@ const optionsSchema = z.object({
 export type VectorSearchOptions = z.input<typeof optionsSchema>;
 type StoredChunk = EmbeddedPortfolioChunk & { _id: string };
 
+export async function getPortfolioContentHashes(ids: readonly string[]): Promise<Map<string, string>> {
+  const validated = z.array(z.string().min(1)).parse(ids);
+  if (!validated.length) return new Map();
+  const collection = (await getMongoDb()).collection<StoredChunk>(COLLECTION);
+  const rows = await collection.find({ _id: { $in: validated } }, { projection: { _id: 1, contentHash: 1 } }).toArray();
+  return new Map(rows.filter(row => typeof row.contentHash === 'string').map(row => [row._id, row.contentHash]));
+}
+
 // Provision manually in the intended development database; never create indexes
 // during browsing. Match numDimensions and model to ingestion/query embeddings.
 // Atlas definition: { fields: [
