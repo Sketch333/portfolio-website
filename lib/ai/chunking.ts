@@ -13,7 +13,9 @@ function splitParagraph(paragraph: string, maxChars: number): string[] {
     let remaining = sentence.trim();
     while (remaining.length > maxChars) {
       const space = remaining.lastIndexOf(' ', maxChars);
-      const end = space > 0 ? space : maxChars;
+      let end = space > 0 ? space : maxChars;
+      if (end < remaining.length && /[\uD800-\uDBFF]/.test(remaining[end - 1]) && /[\uDC00-\uDFFF]/.test(remaining[end])) end--;
+      if (end === 0) throw new RangeError('maxChars cannot fit a Unicode character');
       parts.push(remaining.slice(0, end));
       remaining = remaining.slice(end).trimStart();
     }

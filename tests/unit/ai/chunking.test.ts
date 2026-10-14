@@ -36,6 +36,14 @@ describe('chunkContent', () => {
     expect(chunks.map(chunk => chunk.text).join('')).toBe(text);
     expect(chunkContent({ ...source, text: 'word '.repeat(20).trim() }, 17).every(chunk => chunk.text.length <= 17)).toBe(true);
   });
+  it('never splits a Unicode surrogate pair across chunks', () => {
+    const text = `${'x'.repeat(1799)}😀z`;
+    const chunks = chunkContent({ ...source, text });
+    expect(chunks.map(chunk => chunk.text).join('')).toBe(text);
+    expect(chunks.every(chunk => chunk.text.length <= 1800)).toBe(true);
+    expect(chunks.every(chunk => !/[\uD800-\uDBFF]$/.test(chunk.text) && !/^[\uDC00-\uDFFF]/.test(chunk.text))).toBe(true);
+    expect(() => chunkContent({ ...source, text: '😀' }, 1)).toThrow(/maxChars/);
+  });
   it('preserves leading punctuation in oversized paragraphs', () => {
     const text = '!!! Keep this evidence. Next sentence.';
     expect(chunkContent({ ...source, text }, 25).map(chunk => chunk.text).join(' ')).toBe(text);
