@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "ingest:portfolio": "tsx scripts/ingest-portfolio.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.143",
