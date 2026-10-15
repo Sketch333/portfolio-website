@@ -54,6 +54,12 @@ describe('vector adapter', () => {
     expect(await searchPortfolioVectors([1], { sourceSlug: 'scheduler', limit: 1 })).toEqual([row()]);
     expect(db.aggregate).toHaveBeenCalledTimes(1);
   });
+  it('allows hybrid retrieval to defer broadening until after deduplication', async () => {
+    db.aggregate.mockReturnValue({ toArray: async () => [row()] });
+    const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
+    expect(await searchPortfolioVectors([1], { sourceSlug: 'scheduler', limit: 2, broaden: false })).toEqual([row()]);
+    expect(db.aggregate).toHaveBeenCalledTimes(1);
+  });
   it('rejects unbounded limits, operator-shaped slugs and invalid vectors before connection', async () => {
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
     for (const embedding of [[], [Infinity], [NaN]]) await expect(searchPortfolioVectors(embedding)).rejects.toThrow();

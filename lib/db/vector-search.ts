@@ -14,6 +14,7 @@ const optionsSchema = z.object({
   limit: z.number().int().min(1).max(100).default(6),
   sourceSlug: portfolioChunkSchema.shape.slug.optional(),
   sourceType: portfolioChunkSchema.shape.type.optional(),
+  broaden: z.boolean().default(true),
 });
 export type VectorSearchOptions = z.input<typeof optionsSchema>;
 type StoredChunk = EmbeddedPortfolioChunk & { _id: string };
@@ -43,7 +44,7 @@ export async function upsertPortfolioChunks(chunks: readonly EmbeddedPortfolioCh
 
 export async function searchPortfolioVectors(embedding: number[], options: VectorSearchOptions = {}): Promise<Evidence[]> {
   const queryVector = embeddingSchema.parse(embedding);
-  const { limit, sourceSlug, sourceType } = optionsSchema.parse(options);
+  const { limit, sourceSlug, sourceType, broaden } = optionsSchema.parse(options);
   const collection = (await getMongoDb()).collection<StoredChunk>(COLLECTION);
   async function search(scoped: boolean): Promise<Evidence[]> {
     const filter: Document = {};
@@ -58,7 +59,7 @@ export async function searchPortfolioVectors(embedding: number[], options: Vecto
     return rows.map(row => evidenceSchema.parse(row));
   }
   const results = await search(Boolean(sourceSlug));
-  if (sourceSlug && results.length < limit) {
+  if (broaden && sourceSlug && results.length < limit) {
     const seen = new Set(results.map(result => result.id));
     for (const result of await search(false)) {
       if (!seen.has(result.id)) { results.push(result); seen.add(result.id); }
