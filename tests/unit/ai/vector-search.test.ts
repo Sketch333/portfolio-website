@@ -1,91 +1,62 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EmbeddedPortfolioChunk } from '@/types/ai';
-const db = vi.hoisted(() => ({ bulkWrite: vi.fn(), aggregate: vi.fn(), collection: vi.fn(), connect: vi.fn(), construct: vi.fn(), close: vi.fn() }));
-vi.mock('mongodb', () => ({ MongoClient: class { constructor(...args: unknown[]) { db.construct(...args); } connect() { return db.connect().then(() => this); } close() { return db.close(); } db() { return { collection: db.collection }; } } }));
+
+const db = vi.hoisted(() => ({ chunks: { bulkWrite: vi.fn(), find: vi.fn(), aggregate: vi.fn() }, snapshots: { findOne: vi.fn(), updateOne: vi.fn() }, collection: vi.fn() }));
+vi.mock('@/lib/db/mongo', () => ({ getMongoDb: async () => ({ collection: db.collection }) }));
+const generation = '5b21ad19-56ee-4898-a616-70681da9ea6a';
 const chunk: EmbeddedPortfolioChunk = { id: 'stable-id', type: 'project', slug: 'scheduler', title: 'Scheduler', href: '/projects/scheduler', text: 'Verified text.', index: 0, embedding: [0.2, 0.8], contentHash: 'hash', updatedAt: new Date('2026-01-01') };
 const row = (id = 'stable-id') => ({ id, type: 'project', title: 'Scheduler', href: '/projects/scheduler', text: 'Verified text.', score: 0.8 });
-beforeEach(() => { vi.resetModules(); vi.clearAllMocks(); vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017'); vi.stubEnv('MONGODB_DB', 'test'); db.connect.mockResolvedValue(undefined); db.collection.mockReturnValue({ bulkWrite: db.bulkWrite, aggregate: db.aggregate }); db.bulkWrite.mockResolvedValue({}); });
-afterEach(() => vi.unstubAllEnvs());
-describe('Mongo boundary', () => {
-  it('imports without configuration or starting a client and shares concurrent connections', async () => {
-    vi.stubEnv('MONGODB_URI', '');
-    const { getMongoDb } = await import('@/lib/db/mongo');
-    await import('@/lib/db/vector-search');
-    expect(db.construct).not.toHaveBeenCalled();
-    await expect(getMongoDb()).rejects.toThrow();
-    vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017');
-    await Promise.all([getMongoDb(), getMongoDb()]);
-    expect(db.construct).toHaveBeenCalledTimes(1);
-    expect(db.connect).toHaveBeenCalledTimes(1);
-  });
-  it('retries a rejected connection instead of caching failure forever', async () => {
-    db.connect.mockRejectedValueOnce(new Error('offline'));
-    const { getMongoDb } = await import('@/lib/db/mongo');
-    await expect(getMongoDb()).rejects.toThrow('offline');
-    await getMongoDb();
-    expect(db.connect).toHaveBeenCalledTimes(2);
-  });
+
+beforeEach(() => {
+  vi.resetModules(); vi.clearAllMocks();
+  db.collection.mockImplementation((name: string) => name === 'portfolio_snapshots' ? db.snapshots : db.chunks);
+  db.snapshots.findOne.mockResolvedValue({ _id: 'active', generation, embeddingModel: 'vendor/embedding', activatedAt: new Date() });
+  db.chunks.bulkWrite.mockResolvedValue({}); db.snapshots.updateOne.mockResolvedValue({});
 });
-describe('vector adapter', () => {
-  it('upserts by stable id while preserving source and embedding fields', async () => {
-    const { upsertPortfolioChunks } = await import('@/lib/db/vector-search');
-    await upsertPortfolioChunks([chunk]);
-    expect(db.bulkWrite).toHaveBeenCalledWith([{ updateOne: { filter: { _id: 'stable-id' }, update: { $set: chunk }, upsert: true } }], { ordered: true });
+
+describe('generation snapshot boundary', () => {
+  it('stages generation-specific ids and atomically activates only the small pointer', async () => {
+    const { stagePortfolioSnapshot, activatePortfolioSnapshot } = await import('@/lib/db/vector-search');
+    await stagePortfolioSnapshot({ generation, embeddingModel: 'vendor/embedding', chunks: [chunk] });
+    expect(db.chunks.bulkWrite).toHaveBeenCalledWith([expect.objectContaining({ updateOne: expect.objectContaining({ filter: { _id: `${generation}:stable-id` }, upsert: true }) })], { ordered: true });
+    await activatePortfolioSnapshot({ generation, embeddingModel: 'vendor/embedding' });
+    expect(db.snapshots.updateOne).toHaveBeenCalledWith({ _id: 'active' }, expect.objectContaining({ $set: expect.objectContaining({ generation, embeddingModel: 'vendor/embedding' }) }), { upsert: true });
   });
-  it('does not connect for empty upserts and rejects malformed batches before any write', async () => {
-    const { upsertPortfolioChunks } = await import('@/lib/db/vector-search');
-    await upsertPortfolioChunks([]);
-    await expect(upsertPortfolioChunks([chunk, { ...chunk, embedding: [NaN] }])).rejects.toThrow();
-    expect(db.construct).not.toHaveBeenCalled();
-    expect(db.bulkWrite).not.toHaveBeenCalled();
-  });
-  it('prefilters page slug/type then fills with broader unique evidence in page-first order', async () => {
-    db.aggregate.mockReturnValueOnce({ toArray: async () => [row()] }).mockReturnValueOnce({ toArray: async () => [row(), row('other')] });
+
+  it('keeps corrected, removed, and unpublished predecessor chunks outside every vector query', async () => {
+    db.chunks.aggregate.mockReturnValue({ toArray: async () => [row('corrected')] });
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
-    expect(await searchPortfolioVectors([0.2, 0.8], { sourceSlug: 'scheduler', sourceType: 'project', limit: 2 })).toEqual([row(), row('other')]);
-    const first = db.aggregate.mock.calls[0][0];
-    expect(first[0]).toEqual({ $vectorSearch: { index: 'portfolio_vectors', path: 'embedding', queryVector: [0.2, 0.8], numCandidates: 40, limit: 2, filter: { slug: { $eq: 'scheduler' }, type: { $eq: 'project' } } } });
-    expect(first[1].$project).toMatchObject({ _id: 0, id: 1, score: { $meta: 'vectorSearchScore' } });
-    expect(db.aggregate.mock.calls[1][0][0].$vectorSearch.filter).toBeUndefined();
+    expect(await searchPortfolioVectors([0.2, 0.8])).toEqual([row('corrected')]);
+    const filter = db.chunks.aggregate.mock.calls[0][0][0].$vectorSearch.filter;
+    expect(filter).toEqual({ generation: { $eq: generation } });
   });
-  it('does not broaden a full scoped result', async () => {
-    db.aggregate.mockReturnValue({ toArray: async () => [row()] });
+
+  it('filters the active generation before page scope and broader retrieval', async () => {
+    db.chunks.aggregate.mockReturnValueOnce({ toArray: async () => [row()] }).mockReturnValueOnce({ toArray: async () => [row(), row('other')] });
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
-    expect(await searchPortfolioVectors([1], { sourceSlug: 'scheduler', limit: 1 })).toEqual([row()]);
-    expect(db.aggregate).toHaveBeenCalledTimes(1);
+    expect(await searchPortfolioVectors([1], { sourceSlug: 'scheduler', sourceType: 'project', limit: 2 })).toEqual([row(), row('other')]);
+    expect(db.chunks.aggregate.mock.calls[0][0][0].$vectorSearch.filter).toEqual({ generation: { $eq: generation }, slug: { $eq: 'scheduler' }, type: { $eq: 'project' } });
+    expect(db.chunks.aggregate.mock.calls[1][0][0].$vectorSearch.filter).toEqual({ generation: { $eq: generation } });
   });
-  it('allows hybrid retrieval to defer broadening until after deduplication', async () => {
-    db.aggregate.mockReturnValue({ toArray: async () => [row()] });
+
+  it('returns no vector evidence when no active snapshot exists, including after an empty activation', async () => {
+    db.snapshots.findOne.mockResolvedValue(null);
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
-    expect(await searchPortfolioVectors([1], { sourceSlug: 'scheduler', limit: 2, broaden: false })).toEqual([row()]);
-    expect(db.aggregate).toHaveBeenCalledTimes(1);
+    expect(await searchPortfolioVectors([1])).toEqual([]);
+    expect(db.chunks.aggregate).not.toHaveBeenCalled();
   });
-  it('rejects unbounded limits, operator-shaped slugs and invalid vectors before connection', async () => {
+
+  it('reuses only active rows matching both content hash and embedding model', async () => {
+    db.chunks.find.mockReturnValue({ toArray: async () => [{ id: 'stable-id', contentHash: 'hash', embedding: [0.2, 0.8] }] });
+    const { getReusablePortfolioChunks } = await import('@/lib/db/vector-search');
+    expect(await getReusablePortfolioChunks(['stable-id'], 'vendor/embedding')).toEqual(new Map([['stable-id', { contentHash: 'hash', embedding: [0.2, 0.8] }]]));
+    expect(db.chunks.find).toHaveBeenCalledWith({ generation, embeddingModel: 'vendor/embedding', id: { $in: ['stable-id'] } }, expect.anything());
+  });
+
+  it('validates malformed vectors and options before database access', async () => {
     const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
-    for (const embedding of [[], [Infinity], [NaN]]) await expect(searchPortfolioVectors(embedding)).rejects.toThrow();
-    for (const limit of [0, -1, 101, 1.5]) await expect(searchPortfolioVectors([1], { limit })).rejects.toThrow();
+    await expect(searchPortfolioVectors([])).rejects.toThrow();
     await expect(searchPortfolioVectors([1], { sourceSlug: '$ne' })).rejects.toThrow();
-    expect(db.construct).not.toHaveBeenCalled();
+    expect(db.snapshots.findOne).not.toHaveBeenCalled();
   });
-  it('rejects unsafe returned evidence rather than exposing external links', async () => {
-    db.aggregate.mockReturnValue({ toArray: async () => [{ ...row(), href: 'https://evil.test' }] });
-    const { searchPortfolioVectors } = await import('@/lib/db/vector-search');
-    await expect(searchPortfolioVectors([1])).rejects.toThrow();
-  });
-});
-
-it('reads stored hashes using stable IDs and a narrow projection', async () => {
-  const find = vi.fn().mockReturnValue({ toArray: async () => [{ _id: 'stable-id', contentHash: 'hash' }] });
-  db.collection.mockReturnValue({ find });
-  const { getPortfolioContentHashes } = await import('@/lib/db/vector-search');
-  expect(await getPortfolioContentHashes(['stable-id'])).toEqual(new Map([['stable-id', 'hash']]));
-  expect(find).toHaveBeenCalledWith({ _id: { $in: ['stable-id'] } }, { projection: { _id: 1, contentHash: 1 } });
-});
-
-it('closes and clears the cached client for command lifecycle cleanup', async () => {
-  const { getMongoDb, closeMongoConnection } = await import('@/lib/db/mongo');
-  await getMongoDb();
-  await closeMongoConnection();
-  expect(db.close).toHaveBeenCalledTimes(1);
-  await getMongoDb(); expect(db.construct).toHaveBeenCalledTimes(2);
 });

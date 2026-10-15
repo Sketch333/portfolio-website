@@ -4,7 +4,7 @@ import { getAllProjects } from '@/lib/content/projects';
 import { getAllPosts } from '@/lib/content/blog';
 import { getExperience } from '@/lib/content/experience';
 import { chunkContent, type ChunkSource } from '@/lib/ai/chunking';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { portfolioChunkSchema } from '@/lib/ai/schemas';
 import type { PortfolioChunk } from '@/types/ai';
@@ -29,17 +29,21 @@ export async function buildIngestionRecords() {
 
 export async function ingestChunks(chunks: readonly PortfolioChunk[]) {
   const validated = z.array(portfolioChunkSchema).parse(chunks);
-  const { getPortfolioContentHashes, upsertPortfolioChunks } = await import('@/lib/db/vector-search');
-  const hashes = await getPortfolioContentHashes(validated.map(chunk => chunk.id));
-  const changed = validated.map(chunk => ({ ...chunk, contentHash: createHash('sha256').update(chunk.text).digest('hex') }))
-    .filter(chunk => hashes.get(chunk.id) !== chunk.contentHash);
-  if (!changed.length) return { updated: 0, skipped: validated.length };
-  const { embedTexts } = await import('@/lib/ai/model');
-  const embeddings = await embedTexts(changed.map(chunk => chunk.text));
+  const { getAiEnv } = await import('@/lib/ai/env');
+  const embeddingModel = getAiEnv().AI_EMBEDDING_MODEL;
+  const { getReusablePortfolioChunks, stagePortfolioSnapshot, activatePortfolioSnapshot } = await import('@/lib/db/vector-search');
+  const content = validated.map(chunk => ({ ...chunk, contentHash: createHash('sha256').update(chunk.text).digest('hex') }));
+  const reusable = await getReusablePortfolioChunks(content.map(chunk => chunk.id), embeddingModel);
+  const changed = content.filter(chunk => reusable.get(chunk.id)?.contentHash !== chunk.contentHash);
+  const embeddings = changed.length ? await (await import('@/lib/ai/model')).embedTexts(changed.map(chunk => chunk.text)) : [];
+  const changedEmbeddings = new Map(changed.map((chunk, index) => [chunk.id, embeddings[index]]));
   const updatedAt = new Date();
-  // No mutation occurs until every provider batch has succeeded and been validated.
-  await upsertPortfolioChunks(changed.map((chunk, index) => ({ ...chunk, embedding: embeddings[index], updatedAt })));
-  return { updated: changed.length, skipped: validated.length - changed.length };
+  const snapshot = content.map(chunk => ({ ...chunk, embedding: changedEmbeddings.get(chunk.id) ?? reusable.get(chunk.id)?.embedding!, updatedAt }));
+  const generation = randomUUID();
+  // Provider work and complete staging happen before the one-document publish step.
+  await stagePortfolioSnapshot({ generation, embeddingModel, chunks: snapshot });
+  await activatePortfolioSnapshot({ generation, embeddingModel });
+  return { updated: changed.length, skipped: content.length - changed.length };
 }
 
 export async function runIngestion(args: string[]) {
