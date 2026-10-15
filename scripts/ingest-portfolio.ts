@@ -38,7 +38,11 @@ export async function ingestChunks(chunks: readonly PortfolioChunk[]) {
   const embeddings = changed.length ? await (await import('@/lib/ai/model')).embedTexts(changed.map(chunk => chunk.text)) : [];
   const changedEmbeddings = new Map(changed.map((chunk, index) => [chunk.id, embeddings[index]]));
   const updatedAt = new Date();
-  const snapshot = content.map(chunk => ({ ...chunk, embedding: changedEmbeddings.get(chunk.id) ?? reusable.get(chunk.id)?.embedding!, updatedAt }));
+  const snapshot = content.map(chunk => {
+    const embedding = changedEmbeddings.get(chunk.id) ?? reusable.get(chunk.id)?.embedding;
+    if (!embedding) throw new Error(`Missing embedding for portfolio chunk ${chunk.id}.`);
+    return { ...chunk, embedding, updatedAt };
+  });
   const generation = randomUUID();
   // Provider work and complete staging happen before the one-document publish step.
   await stagePortfolioSnapshot({ generation, embeddingModel, chunks: snapshot });
