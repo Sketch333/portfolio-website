@@ -1,6 +1,4 @@
-﻿import Link from "next/link";
-import { siteConfig } from "@/lib/metadata/site";
-
+import { LazyAskPortfolio } from "@/components/ai/lazy-ask-portfolio";
 export function AskPortfolio() {
   return (
     <section
@@ -16,23 +14,11 @@ export function AskPortfolio() {
           </h2>
           <p className="home-secondary mt-6 max-w-xl text-lg leading-8">
             Have a question about the systems, the decisions, or where I
-            contributed? Explore the case studies or ask me directly.
+            contributed? Explore the evidence behind the work.
           </p>
         </div>
         <div className="border-l-2 border-current pl-6">
-          <p className="home-caption">Direct conversation</p>
-          <p className="mt-3 leading-7">
-            The portfolio assistant is not available yet. The work, and a real
-            conversation, are.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-6">
-            <Link href="/projects" className="home-link">
-              Explore case studies
-            </Link>
-            <a href={`mailto:${siteConfig.email}`} className="home-link">
-              Email me
-            </a>
-          </div>
+          <LazyAskPortfolio />
         </div>
       </div>
     </section>
