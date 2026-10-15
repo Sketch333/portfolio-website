@@ -146,3 +146,20 @@ it("updates a mounted assistant when search navigation changes the fragment ques
   fireEvent(window, new HashChangeEvent("hashchange"));
   expect(screen.getByRole("textbox")).toHaveValue("Current role");
 });
+it("activates and scrolls legacy fragment handoffs before any viewport intersection", async () => {
+  const scroll = vi.fn();
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  );
+  const original = HTMLElement.prototype.scrollIntoView;
+  HTMLElement.prototype.scrollIntoView = scroll;
+  window.history.replaceState({}, "", "/#ask-ai?q=Neo4j");
+  render(<LazyAskPortfolio />);
+  await waitFor(() => expect(screen.getByRole("textbox")).toHaveValue("Neo4j"));
+  expect(scroll).toHaveBeenCalled();
+  HTMLElement.prototype.scrollIntoView = original;
+});

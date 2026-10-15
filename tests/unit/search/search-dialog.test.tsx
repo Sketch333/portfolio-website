@@ -18,7 +18,7 @@ it('opens search, renders typed results, and returns focus after Escape', async 
   fireEvent.change(input, { target: { value: 'Neo4j' } });
   expect(screen.getByRole('link', { name: /Multimodal chatbot/ })).toHaveAttribute('href', '/projects/chat');
   expect(screen.getByText('project')).toBeVisible();
-  expect(screen.getByRole('link', { name: 'Ask AI about this' })).toHaveAttribute('href', '/#ask-ai?q=Neo4j');
+  expect(screen.getByRole('link', { name: 'Ask AI about this' })).toHaveAttribute('href', '/?q=Neo4j#ask-ai');
   fireEvent.keyDown(input, { key: 'ArrowDown' });
   expect(screen.getByRole('link', { name: /Multimodal chatbot/ })).toHaveFocus();
   fireEvent.keyDown(document, { key: 'Escape' });
@@ -33,5 +33,6 @@ it('offers browse paths and an encoded AI link when nothing matches', async () =
   expect(screen.getByRole('status')).toHaveTextContent('No results');
   expect(screen.getByRole('link', { name: 'Browse projects' })).toHaveAttribute('href', '/projects');
   expect(screen.getByRole('link', { name: 'Browse writing' })).toHaveAttribute('href', '/blog');
-  expect(screen.getByRole('link', { name: 'Ask AI about this' })).toHaveAttribute('href', '/#ask-ai?q=x%20%26%20y');
+  expect(screen.getByRole('link', { name: 'Ask AI about this' })).toHaveAttribute('href', '/?q=x%20%26%20y#ask-ai');
 });
+

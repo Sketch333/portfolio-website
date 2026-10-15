@@ -1,3 +1,4 @@
+import { AskPortfolio } from '@/components/sections/ask-portfolio';
 import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import { breadcrumbJsonLd, serializeJsonLd } from '@/lib/metadata/json-ld';
 import type { Metadata } from 'next';
@@ -66,5 +67,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   return <>
     {breadcrumbs ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbs) }} /> : null}
     <ProjectCaseStudy project={project} presentation={presentation} demo={demo} nextProject={nextProject} />
+    <AskPortfolio pageContext={{ type: 'project', slug: project.slug }} />
   </>;
 }
+

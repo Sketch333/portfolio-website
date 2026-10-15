@@ -1,3 +1,4 @@
+import { AskPortfolio } from '@/components/sections/ask-portfolio';
 import { buildPageMetadata } from '@/lib/metadata/build-metadata';
 import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from '@/lib/metadata/json-ld';
 import type { Metadata } from 'next';
@@ -44,5 +45,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <ArticleHeader post={post} />
     <div className="writing-reading-layout"><ArticleToc headings={extractHeadings(post.body)} /><div className="writing-body">{body}</div></div>
     <RelatedContent projects={related} previous={posts[index - 1]} next={posts[index + 1]} />
-  </div></article>;
+  </div><AskPortfolio pageContext={{ type: 'blog', slug: post.slug }} /></article>;
 }
+

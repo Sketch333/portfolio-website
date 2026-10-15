@@ -29,9 +29,10 @@ export function SearchResults({ query, results, onNavigate }: {
       <nav aria-label="Search alternatives" className="mt-5 flex flex-wrap gap-3 border-t pt-4 text-sm">
         <Link href="/projects" onClick={onNavigate} className={`${searchLinkClass} inline-flex min-h-11 items-center underline`}>Browse projects</Link>
         <Link href="/blog" onClick={onNavigate} className={`${searchLinkClass} inline-flex min-h-11 items-center underline`}>Browse writing</Link>
-        {query.trim() && <Link href={`/#ask-ai?q=${encodeURIComponent(query.trim())}`} onClick={onNavigate}
-          className={`${searchLinkClass} inline-flex min-h-11 items-center underline`}>Ask AI about this</Link>}
+        {query.trim() && <a href={`/?q=${encodeURIComponent(query.trim())}#ask-ai`} onClick={onNavigate}
+          className={`${searchLinkClass} inline-flex min-h-11 items-center underline`}>Ask AI about this</a>}
       </nav>
     </>
   );
 }
+

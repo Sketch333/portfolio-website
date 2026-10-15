@@ -29,6 +29,21 @@ export function LazyAskPortfolio({ pageContext }: Props) {
     }
   }
   useEffect(() => {
+    const handoff = () => {
+      if (!/^#ask-ai(?:\?|$)/.test(window.location.hash)) return;
+      boundary.current?.scrollIntoView({ block: "start" });
+      void activate(true);
+    };
+    const frame = window.requestAnimationFrame(handoff);
+    window.addEventListener("hashchange", handoff);
+    window.addEventListener("popstate", handoff);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("hashchange", handoff);
+      window.removeEventListener("popstate", handoff);
+    };
+  }, []);
+  useEffect(() => {
     if (!boundary.current || !("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(
       (entries) => {

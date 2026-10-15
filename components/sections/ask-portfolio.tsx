@@ -1,5 +1,10 @@
+import type { PortfolioPageContext } from "@/types/ai";
 import { LazyAskPortfolio } from "@/components/ai/lazy-ask-portfolio";
-export function AskPortfolio() {
+export function AskPortfolio({
+  pageContext,
+}: {
+  pageContext?: PortfolioPageContext;
+}) {
   return (
     <section
       id="ask-ai"
@@ -18,7 +23,7 @@ export function AskPortfolio() {
           </p>
         </div>
         <div className="border-l-2 border-current pl-6">
-          <LazyAskPortfolio />
+          <LazyAskPortfolio pageContext={pageContext} />
         </div>
       </div>
     </section>
